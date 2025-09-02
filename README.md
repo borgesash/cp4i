@@ -1,2 +1,716 @@
 # cp4i
 This guide installs Cloud Pak for Integration on an Openshift cluster.
+
+Reference: https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.0?topic=installing
+This install guide is for CP4I v16.1.0. This is the latest SC-2 (long term support) version of Cloud Pak for Integration. For the latest CD release, see What's new in Cloud Pak for Integration 16.1.2.
+We will install the following components of CP4I: 
+•	Queue Manager
+•	App Connect Enterprise Integration Servers
+
+Overview
+IBM Cloud Pak® for Integration installation consists of a Red Hat® OpenShift® Container Platform cluster with one or more operators installed and one or more deployed instances. You can complete all the installation steps yourself or simplify the process by installing on a managed OpenShift cluster from a cloud provider.
+The main installation tasks are as follows:
+1.	Add catalog sources, to make the Cloud Pak for Integration operators available to the cluster.
+2.	Install the Cloud Pak for Integration operators.
+3.	Apply your entitlement key.
+4.	Deploy the IBM Cloud Pak Platform UI and other instances.
+This guide assumes you already have an OCP cluster with the right version and capacity up and running. The demo is based upon OCP v4.16.x with 5 worker nodes 32 vCPUs X 128 GB memory each. 
+Note: IBM Cloud Pak® for Integration 16.1.0 supports Red Hat OpenShift 4.12, 4.14, 4.15, 4.16, 4.17, 4.18, and 4.19. 
+
+Before you begin
+1.	Prepare for installation by reviewing the Planning section. Begin with these topics:
+    Operating environment
+    o	Storage considerations
+    o	Considerations for high availability
+    o	Structuring your deployment (Separate namespace vs global namespace)
+2.	Make decisions about how you will install the operators:
+o	Determine which Cloud Pak for Integration operators you need. For more information, see "Operators available to install" in Installing the operators by using the Red Hat OpenShift console. For more information about operators in general, see Operator reference.
+o	Decide which installation mode you will use to install the operators. For more information, see Installing the operators.
+3.	Install an appropriate OpenShift cluster. For more information, see Getting started in OpenShift Container Platform.
+4.	Tools required: 
+•	Install oc CLI
+
+5.	Obtaining your entitlement key
+a.	Go to the Container software library.
+b.	For any key that is listed, click Copy.
+Set your entitlement key:
+export ENT_KEY=<my-key>
+c.	(Optional) Verify the validity of the key by logging in to the IBM Entitled Registry by using a container tool.
+docker login cp.icr.io --username cp --password entitlement_key
+6.	Set the correct Storage type
+Storage options 
+Keycloak uses either the default storage class in Red Hat OpenShift Container Platform, or the storage class configured in the IBM Cloud Pak® foundational services Kubernetes resource. Before installing instances, do one of the following:
+•	Set a default storage class by adding the storageclass.kubernetes.io/is-default-class:'true' annotation in Red Hat OpenShift Container Platform.
+•	Specify a storage class name for spec.storageClass in the CommonService resource.
+a.	Identify current storage type
+Run command to identify the existing Storage type:
+oc get sc
+Your will get a response like this (then proceed with the steps below):
+NAME                                                                PROVISIONER                                                 RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
+localblock                                                        kubernetes.io/no-provisioner                     Delete                       WaitForFirstConsumer         false                                                18h
+ocs-storagecluster-ceph-rbd                    openshift-storage.rbd.csi.ceph.com        Delete                       Immediate                               true                                                  18h
+ocs-storagecluster-ceph-rgw                   openshift-storage.ceph.rook.io/bucket   Delete                       Immediate                               false                                                 18h
+ocs-storagecluster-cephfs (default)       openshift-storage.cephfs.csi.ceph.com   Delete                      Immediate                               true                                                   18h
+openshift-storage.noobaa.io                    openshift-storage.noobaa.io/obc               Delete                      Immediate                               false                                                  18h
+
+
+For this demo environment, we are using ODF, so default storage will be ocs-storagecluster-ceph-rbd. 
+b.	Remove the existing default storage class
+Create sc-remove-default.yaml
+metadata:
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "false"
+
+oc get sc | grep default | awk '{system("oc patch storageclass " $1 " --patch-file sc-remove-default.yaml")}'
+c.	Add the correct default storage class
+create sc-set-default.yaml
+metadata:
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "true"
+
+oc patch storageclass ocs-storagecluster-ceph-rbd --patch-file sc-set-default.yaml
+
+d.	Validate the default storage class
+	Run the following command to verify that the default storage class is correct set to your desired option. In this case it should be ocs-storagecluster-ceph-rbd
+oc get sc 
+oc get sc
+NAME                                                                PROVISIONER                                                 RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
+localblock                                                        kubernetes.io/no-provisioner                     Delete                       WaitForFirstConsumer         false                                                18h
+ocs-storagecluster-ceph-rbd (default)   openshift-storage.rbd.csi.ceph.com        Delete                       Immediate                               true                                                  18h
+ocs-storagecluster-ceph-rgw                   openshift-storage.ceph.rook.io/bucket   Delete                       Immediate                               false                                                 18h
+ocs-storagecluster-cephfs                        openshift-storage.cephfs.csi.ceph.com   Delete                      Immediate                               true                                                   18h
+openshift-storage.noobaa.io                    openshift-storage.noobaa.io/obc               Delete                      Immediate                               false                                                  18h
+
+
+
+
+Install Steps
+
+What will be deployed in which namespace?
+	namespace	command
+All Catalogsources	openshift-marketplace	oc get catalogsources -n openshift-marketplace
+
+All Operators	openshift-operators
+	oc get deployment -n openshift-operators
+Common Services (KeyCloak/EDB)	ibm-common-services	
+Platform Navigator Instance	tools	oc get platformnavigator -n tools
+MQ Instance	cp4i-mq	
+ACE Instance	cp4i-ace	
+
+
+Deploy IBM Foundational Services
+
+Red Hat OpenShift Operators automate the creation, configuration, and management of instances of Kubernetes-native applications. Operators provide automation at every level of the stack—from managing the parts that make up the platform all the way to applications that are provided as a managed service.
+Red Hat OpenShift uses the power of Operators to run the entire platform in an autonomous fashion while exposing configuration natively through Kubernetes objects, allowing for quick installation and frequent, robust updates. In addition to the automation advantages of Operators for managing the platform, Red Hat OpenShift makes it easier to find, install, and manage Operators running on your clusters.
+The foundational services help you manage and administer IBM software on your cluster. IBM Cloud Pak foundational services component is included in several IBM Cloud Paks.
+1.	Installing Cert Manager (Required if using APIC/Event Manager/Event Processing)
+Important: The API Connect cluster, Event Manager, and Event Processing instances require you to install an appropriate certificate manager. Follow the instructions in Installing the cert-manager Operator for Red Hat OpenShift to fulfill this requirement.
+OPTIONAL: To install via Openshift Console UI, follow the instructions in Installing the cert-manager Operator for Red Hat OpenShift
+a.	Create a namespace 
+oc new-project cert-manager-operator
+
+b.	Create the following cert manager yaml files
+	
+cert-manager-operatorgroup.yaml	apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: cert-manager-operator
+  namespace: cert-manager-operator 
+spec:
+  targetNamespaces:
+  - cert-manager-operator
+cert-manager-subscription.yaml	apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: openshift-cert-manager-operator
+  namespace: cert-manager-operator 
+spec:
+  channel: "stable-v1" 
+  name: openshift-cert-manager-operator
+  source: redhat-operators 
+  sourceNamespace: openshift-marketplace
+
+oc apply -f cert-manager-operatorgroup.yaml
+oc apply -f cert-manager-subscription.yaml
+
+c.	Confirm the subscription has been completed successfully before moving to the next step running the following command:
+SUB_NAME=$(oc get deployment cert-manager-operator-controller-manager -n cert-manager-operator --ignore-not-found -o jsonpath='{.metadata.labels.olm\.owner}');if [ ! -z "$SUB_NAME" ]; then oc get csv/$SUB_NAME -n cert-manager-operator --ignore-not-found -o jsonpath='{.status.phase}';fi;echo
+Wait Until You get a response like this:
+Succeeded
+
+2.	Install Common Services Catalog Source
+
+a. Deploy the Catalog Source
+oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-cp-common-services/4.6.17/OLM/catalog-sources.yaml
+Note: Reference for correct catalog sources for CP4I v16.1.0: Catalog sources for operators
+Confirm the catalog source has been deployed successfully before moving to the next step running the following command:
+oc get catalogsources opencloud-operators -n openshift-marketplace -o jsonpath='{.status.connectionState.lastObservedState}';echo
+Wait Until You get a response like this:
+READY
+
+3.	Create common-services namespace:
+oc create namespace ibm-common-services
+4.	Install  common-services Operator:
+
+Optional: Installing the operators by using the Red Hat OpenShift console
+e.	Create a Subscription for the IBM Cloud Pak foundational services operator using the example file. Save the file as common-service-subscription.yaml
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: ibm-common-service-operator
+  namespace: openshift-operators
+spec:
+  channel: v4.6
+  installPlanApproval: Automatic
+  name: ibm-common-service-operator
+  source: opencloud-operators
+  sourceNamespace: openshift-marketplace
+
+oc apply -f common-service-subscription.yaml -n openshift-operators
+
+f.	Confirm the operator has been deployed successfully before moving to the next step running the following command:
+SUB_NAME=$(oc get deployment/ibm-common-service-operator -n openshift-operators --ignore-not-found -o jsonpath='{.metadata.labels.olm\.owner}');if [ ! -z "$SUB_NAME" ]; then oc get csv/$SUB_NAME --ignore-not-found -o jsonpath='{.status.phase}';fi;echo
+Wait Until You get a response like this:
+Succeeded
+
+Deploy Platform Navigator
+
+Deploying the Platform UI allows you to deploy and manage instances from a central location.
+1.	Install Platform UI Catalog Source
+Note: Reference for correct catalog sources for CP4I v16.1.0: Catalog sources for operators
+oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-integration-platform-navigator/7.3.16/OLM/catalog-sources.yaml
+Confirm the catalog source has been deployed successfully before moving to the next step running the following command:
+oc get catalogsources ibm-integration-platform-navigator-catalog -n openshift-marketplace -o jsonpath='{.status.connectionState.lastObservedState}';echo
+Wait Until You get a response like this:
+READY
+2.	Install Operator:
+a.	Create a Subscription for the IBM Cloud Pak foundational services operator using the example file. Save the file as platform-navigator-subscription.yaml
+#reference source: https://github.ibm.com/joel-gomez/cp4i-demo/blob/main/subscriptions/16.1.0/01-platform-navigator-subscription.yaml
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: ibm-integration-platform-navigator
+  namespace: openshift-operators
+spec:
+  channel: v7.3-sc2
+  name: ibm-integration-platform-navigator
+  source: ibm-integration-platform-navigator-catalog
+  sourceNamespace: openshift-marketplace
+
+oc apply -f platform-navigator-subscription.yaml -n openshift-operators
+
+b.	Confirm the operator has been deployed successfully before moving to the next step running the following command:
+SUB_NAME=$(oc get deployment ibm-integration-platform-navigator-operator -n openshift-operators --ignore-not-found -o jsonpath='{.metadata.labels.olm\.owner}');if [ ! -z "$SUB_NAME" ]; then oc get csv/$SUB_NAME --ignore-not-found -o jsonpath='{.status.phase}';fi;echo
+Wait Until You get a response like this(after few minutes):
+Succeeded
+		Note: You may be seeing a response of PENDING which indicates the deployment is underway butnot yet complete. Wait until the READY response is received before continuing.
+3.	Deploy the Platform UI instance 
+a.	Create Platform UI namespace and add pull secret to Namespace
+oc new-project tools
+
+oc create secret docker-registry ibm-entitlement-key   --docker-username=cp    --docker-password=$ENT_KEY  --docker-server=cp.icr.io     --namespace=tools
+Note: The IBM Entitled Registry contains software images for the instances in IBM Cloud Pak® for Integration. To allow the operators to automatically pull those software images, you must first obtain your entitlement key, then add your entitlement key in a pull secret. Your entitlement key must be added to the OpenShift cluster as a pull secret to deploy instances. Adding a global pull secret enables deployment of instances in all namespaces. The alternative is to add a pull secret to each namespace in which you plan to deploy instances (any namespace with operators), plus the `openshift-operators` namespace. However, this option adds work to your installation process.
+
+b.	Create a PlatformNavigator YAML file. For example, you could create a file called platform-ui-instance.yaml with the following example configuration. 
+apiVersion: integration.ibm.com/v1beta1
+kind: PlatformNavigator
+metadata:
+  name: cp4i-navigator
+  namespace: tools
+spec:
+  integrationAssistant:
+    enabled: true
+  license:
+    accept: true
+    license: L-JTPV-KYG8TF
+  replicas: 3
+  version: 16.1.0
+
+oc apply -f platform-ui-instance.yaml  -n tools
+c.	Check the status of the Platform UI instance by running the following command in the project (namespace) where it was deployed:
+oc get platformnavigator cp4i-navigator -n tools -o jsonpath='{.status.conditions[0].type}';echo
+
+Wait Until You get a response like this: (Note: This can take upto 15mins)
+Ready
+
+d.	Once the Platform UI instance is up and running get the access info:
+Execute the following commands to retrieve the CP4I_URL, USER and Password:
+oc get platformnavigator cp4i-navigator -n tools -o jsonpath='{.status.endpoints[?(@.name=="navigator")].uri}'
+oc get secret integration-admin-initial-temporary-credentials -n ibm-common-services -o jsonpath={.data.username} | base64 -d
+oc get secret integration-admin-initial-temporary-credentials -n ibm-common-services -o jsonpath={.data.password} | base64 -d
+Note the password is temporary and you will be required to change it the first time you log into Platform UI.
+
+4.	Login to CP4I 
+Use the browser to login to the CP4I url and upon successfully reset of password, you should see the following screen
+ 
+
+
+Deploy Asset Repo (optional)
+
+To be completed …. 
+
+Deploy Enterprise Messaging - MQ
+1.	Install MQ Catalog Source:
+
+•	Deploy the Catalog source
+oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-mq/3.2.14/OLM/catalog-sources.yaml
+Confirm the catalog source has been deployed successfully before moving to the next step running the following command:
+oc get catalogsources ibmmq-operator-catalogsource -n openshift-marketplace -o jsonpath='{.status.connectionState.lastObservedState}';echo
+Wait Until You get a response like this:
+READY
+2.	Install MQ Operator (2-5 mins):
+•	Create a Subscription for the MQ operator using the example file. Save the file as mq-subscription.yaml
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: ibm-mq
+  labels:
+    backup.mq.ibm.com/component: subscription        
+spec:
+  channel: v3.2-sc2
+  name: ibm-mq
+  source: ibmmq-operator-catalogsource
+  sourceNamespace: openshift-marketplace
+
+oc apply -f mq-subscription.yaml -n openshift-operators
+
+•	Confirm the operator has been deployed successfully before moving to the next step running the following command:
+SUB_NAME=$(oc get deployment ibm-mq-operator -n openshift-operators --ignore-not-found -o jsonpath='{.metadata.labels.olm\.owner}');if [ ! -z "$SUB_NAME" ]; then oc get csv/$SUB_NAME --ignore-not-found -o jsonpath='{.status.phase}';fi;echo
+Wait Until You get a response like this:
+Succeeded
+3.	Create MQ namespace and add pull secret to Namespace
+oc new-project cp4i-mq
+oc create secret docker-registry ibm-entitlement-key   --docker-username=cp    --docker-password=$ENT_KEY  --docker-server=cp.icr.io     --namespace=cp4i-mq
+
+4.	Deploy Queue Manager Instance
+
+Note: This is sample configuration for single Instance Queue Manager using MQSC and INI files. Additional configuration steps will be needed for more advanced MQ configuration and Security. 
+	Creating a self-signed PKI using OpenSSL
+	Example: Configuring a queue manager with mutual TLS authentication
+	Testing a mutual TLS connection to a queue manager from your laptop
+	Configuring high availability for queue managers using the IBM MQ Operator
+	Configuring a Route to connect to a queue manager from outside a Red Hat OpenShift cluster
+
+o	Create mqsc-ini-example.yaml with the following:
+
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mqsc-ini-example
+data:
+  example1.mqsc: |
+    DEFINE QLOCAL('DEV.QUEUE.1') REPLACE
+    DEFINE QLOCAL('DEV.QUEUE.2') REPLACE    
+  example2.mqsc: |
+    DEFINE QLOCAL('DEV.DEAD.LETTER.QUEUE') REPLACE
+  example.ini: |
+    Service:
+      Name=AuthorizationService
+      EntryPoints=14
+      SecurityPolicy=UserExternal
+
+•	Create qmgr-demo-config.yaml with the following:
+(This yaml can also be generated via the platform navigator UI) 
+(Navigate to Platform UI  Click Create Instance  Pick Queue Manager  Click next  Pick QuickStart configuration  Click Next  Toggle Advance Setting toggle switch  Enter the details  Click YAML ) Either copy+paste the new YAML or continue deploying MQ instance via UI)
+apiVersion: mq.ibm.com/v1beta1
+kind: QueueManager
+metadata:
+  name: qmgr-demo
+  namespace: cp4i-mq
+spec:
+  version: 9.4.0.12-r1 # The identifier of the license you are accepting. This must be the correct license identifier for the version of MQ you are using. See https://ibm.biz/Bdm9be for valid values.
+  license:
+    accept: true
+    license: L-JTPV-KYG8TF
+    use: NonProduction
+  queueManager:
+    name: QMGRDEMO
+    availability:
+      type: SingleInstance
+    mqsc:
+    - configMap:
+        name: mqsc-ini-example
+        items:
+        - example1.mqsc
+        - example2.mqsc
+    ini:
+    - configMap:
+        name: mqsc-ini-example
+        items:
+        - example.ini
+    storage:
+      defaultClass: ocs-storagecluster-ceph-rbd
+      queueManager:
+        type: persistent-claim
+  web:
+    console:
+      authentication:
+        provider: integration-keycloak
+      authorization:
+        provider: integration-keycloak
+    enabled: true
+
+
+oc apply -f mqsc-ini-example.yaml -n cp4i-mq
+oc apply -f qmgr-demo-config.yaml -n cp4i-mq
+
+•	Confirm the instance has been deployed successfully before moving to the next step running the following command:
+oc get queuemanager qmgr-demo -n cp4i-mq -o jsonpath='{.status.phase}';echo
+Wait Until You get a response like this:
+Running
+•	Execute the following command to verify that QMGR is running
+oc exec qmgr-demo-ibm-mq-0 -n cp4i-mq -- dspmq
+
+5.	In the platform Navigator, you will now see any instance of Queue Manager running. Click on the link to navigate to QM console.
+ 
+
+Deploy App Connect
+
+1.	Install App Connect Catalog Source:
+a.	Apply the catalog source 
+
+b.	Confirm the catalog source has been deployed successfully before moving to the next step running the following command:
+oc get catalogsources appconnect-operator-catalogsource -n openshift-marketplace -o jsonpath='{.status.connectionState.lastObservedState}';echo
+Wait Until You get a response like this:
+READY
+2.	Install App Connect Operator: (Time Install ~2 mins)
+
+a.	Create app-connect-subscription.yaml
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: ibm-appconnect
+  labels:
+    backup.appconnect.ibm.com/component: subscription        
+spec:
+  channel: v12.0-sc2
+  name: ibm-appconnect
+  source: appconnect-operator-catalogsource
+  sourceNamespace: openshift-marketplace
+
+oc apply -f app-connect-subscription.yaml -n openshift-operators
+b.	Confirm the operator has been deployed successfully before moving to the next step running the following command:
+SUB_NAME=$(oc get deployment ibm-appconnect-operator -n openshift-operators --ignore-not-found -o jsonpath='{.metadata.labels.olm\.owner}');if [ ! -z "$SUB_NAME" ]; then oc get csv/$SUB_NAME --ignore-not-found -o jsonpath='{.status.phase}';fi;echo
+Wait Until You get a response like this:
+Succeeded
+3.	Create new namespace and add entitlement key as secret
+
+oc new-project cp4i-ace
+
+oc create secret docker-registry ibm-entitlement-key   --docker-username=cp    --docker-password=$ENT_KEY  --docker-server=cp.icr.io     --namespace=cp4i-ace
+
+4.	Deploy Dashboard instance:
+a.	Create ace-dashboard-instance.yaml file
+For OCP_TYPE=ODF; set OCP_FILE_STORAGE='ocs-storagecluster-cephfs'
+(This yaml can also be generated via the platform navigator UI)
+(Navigate to Platform UI  Click Create Instance  Pick Integration Dashboard  Click next  Pick QuickStart configuration  Click Next  Toggle Advance Setting toggle switch  Enter the details  Click YAML ) Either copy+paste the new YAML or continue deploying MQ instance via UI)
+apiVersion: appconnect.ibm.com/v1beta1
+kind: Dashboard
+metadata:
+  labels:
+    backup.appconnect.ibm.com/component: dashboard
+  name: ace-dashboard
+spec:
+  authentication:
+    integrationKeycloak:
+      enabled: true
+  authorization:
+    integrationKeycloak:
+      enabled: true
+  displayMode: IntegrationRuntimes
+  license:
+    accept: true
+    license: L-XRNH-47FJAW
+    use: CloudPakForIntegrationNonProduction
+  pod:
+    containers:
+      content-server:
+        resources:
+          limits:
+            memory: 512Mi
+          requests:
+            cpu: 50m
+            memory: 50Mi
+      control-ui:
+        resources:
+          limits:
+            memory: 512Mi
+          requests:
+            cpu: 50m
+            memory: 125Mi
+  replicas: 1
+  storage:
+    size: 5Gi
+    type: persistent-claim
+    class: ocs-storagecluster-cephfs
+  version: '12.0'
+  api:
+    enabled: true
+
+oc apply -f  ace-dashboard-instance.yaml -n cp4i-ace
+
+b.	Confirm the instance has been deployed successfully before moving to the next step running the following command:
+oc get dashboard ace-dashboard -n cp4i-ace -o jsonpath='{.status.phase}';echo
+Wait Until You get a response like this:
+Ready
+c.	You should Now see the ace-dashboard instance in the Platform Navigator UI
+		 
+
+5.	Deploy Designer Authoring instance 
+a.	Create ace-designer-local-ai-instance.yaml file 
+
+(This yaml can also be generated via the platform navigator UI)
+(Navigate to Platform UI  Click Create Instance  Pick Integration Design  Click next  Pick QuickStart with AI Enabled configuration  Click Next  Toggle Advance Setting toggle switch  Enter the details  Click YAML ) Either copy+paste the new YAML or continue deploying MQ instance via UI)
+
+apiVersion: appconnect.ibm.com/v1beta1
+kind: DesignerAuthoring
+metadata:
+  labels:
+    backup.appconnect.ibm.com/component: designerauthoring
+  name: ace-designer-ai
+  namespace: cp4i-ace
+spec:
+  authentication:
+    integrationKeycloak:
+      enabled: true
+  authorization:
+    integrationKeycloak:
+      enabled: true
+  couchdb:
+    replicas: 1
+    storage:
+      size: 10Gi
+      type: persistent-claim
+      class: ocs-storagecluster-ceph-rbd
+  designerFlowsOperationMode: local
+  designerMappingAssist:
+    enabled: true
+    incrementalLearning:
+      schedule: Every 15 days
+      useIncrementalLearning: true
+      storage:
+        type: persistent-claim
+        class: ocs-storagecluster-cephfs
+  license:
+    accept: true
+    license: L-XRNH-47FJAW
+    use: CloudPakForIntegrationNonProduction
+  replicas: 1
+  version: '12.0'
+
+oc apply -f ace-designer-local-ai-instance.yaml -n cp4i-ace
+
+b.	Confirm the instance has been deployed successfully before moving to the next step running the following command:
+oc get designerauthoring ace-designer-ai -n cp4i-ace -o jsonpath='{.status.phase}';echo
+Wait Until You get a response like this:
+Ready
+c.	Once deployed, you should see the ace-designer instance in the platform navigator ui
+		 		
+
+6.	Additional components as needed
+•	Deploy Integration runtime instances
+
+
+REFERENCES
+
+Structing Deployments in Namespaces 
+What will be deployed in which namespace?
+	namespace	command
+All Catalogsources	openshift-marketplace	oc get catalogsources -n openshift-marketplace
+
+All Operators	openshift-operators
+	oc get deployment -n openshift-operators
+Common Services (KeyCloak/EDB)	ibm-common-services	
+Platform Navigator Instance	tools	oc get platformnavigator -n tools
+MQ Instance	cp4i-mq	
+ACE Instance	cp4i-ace	
+
+
+
+CATALOG SOURCES
+Add a separate catalog source for each operator in your OpenShift cluster, to make the IBM operators available for installation. This task is also required to apply the fix packs for catalog sources, prior to an upgrade. Using a separate catalog source for each operator gives you full control of software versioning on an OpenShift cluster. It enables the following:
+•	Upgrade each Cloud Pak component independently.
+•	Have a fully declarative set of artifacts, which you can use to recreate exact installations.
+•	Easily control upgrade and promotion through environments (such as from test to production environments) with a CI/CD pipeline.
+•	Control when upgrades happen. A new operator version becomes available in an OpenShift cluster only after you update the catalog source for that operator. This process effectively gives you manual control of upgrades, without actually using the Manual option (which is not recommended; see "Before you begin" for more information).
+
+CATALOG SOURCE YAML
+Reference: https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.0?topic=images-adding-catalog-sources-openshift-cluster#catalog-sources-for-operators__title__1
+
+		
+1	IBM Cloud Pak foundational services
+
+	oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-cp-common-services/4.6.17/OLM/catalog-sources.yaml
+
+2	IBM Cloud Pak for Integration
+
+	oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-integration-platform-navigator/7.3.16/OLM/catalog-sources.yaml
+optional	IBM Automation foundation assets
+
+	oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-integration-asset-repository/1.7.13/OLM/catalog-sources-linux-amd64.yaml
+4	IBM API Connect
+
+	oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-apiconnect/5.5.0/OLM/catalog-sources.yaml
+6	IBM App Connect
+
+	oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-appconnect/12.0.15/OLM/catalog-sources.yaml
+5	IBM MQ
+
+	oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-mq/3.2.14/OLM/catalog-sources.yaml
+3	IBM DataPower Gateway
+
+	oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-datapower-operator/1.11.7/OLM/catalog-sources.yaml
+
+		
+optional	IBM Event Streams
+
+	oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-eventstreams/12.0.0/OLM/catalog-sources.yaml
+
+optional	IBM Event Endpoint Management
+
+	oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-eventendpointmanagement/11.6.3/OLM/catalog-sources.yaml
+
+optional	IBM Event Processing *
+
+	oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-eventprocessing/1.4.2/OLM/catalog-sources.yaml
+
+Subscription YAML 
+
+Subscription YAML 
+Reference: For a full list of subscriptions, see Operators available to install.
+
+		
+	IBM Cloud Pak for Integration - Platform UI, Assembly, API, API Product, Messaging server, Messaging channel, Messaging queue, Messaging user
+
+	apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: ibm-integration-platform-navigator
+  namespace: openshift-operators
+  labels:
+    backup.integration.ibm.com/component: subscription        
+spec:
+  channel: v7.3-sc2
+  name: ibm-integration-platform-navigator
+  source: ibm-integration-platform-navigator-catalog
+  sourceNamespace: openshift-marketplace
+	IBM Cloud Pak foundational services - Cloud Pak foundational services for Cloud Native PostgreSQL and RedHat Build of Keycloak only
+
+	apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: ibm-common-service-operator
+  namespace: openshift-operators
+  labels:
+    backup.integration.ibm.com/component: subscription        
+spec:
+  channel: v4.6
+  name: ibm-common-service-operator
+  source: opencloud-operators
+  sourceNamespace: openshift-marketplace
+	IBM Automation foundation assets - Automation assets
+
+	apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: ibm-integration-asset-repository
+  labels:
+    backup.integration.ibm.com/component: subscription        
+spec:
+  channel: v1.7-sc2
+  name: ibm-integration-asset-repository
+  source: ibm-integration-asset-repository-catalog
+  sourceNamespace: openshift-marketplace
+	IBM API Connect - API Connect cluster, API Manager, API Analytics, API Portal, API Gateway
+
+	apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: ibm-apiconnect
+  labels:
+    backup.apiconnect.ibm.com/component: subscription        
+spec:
+  channel: v5.5-sc2
+  name: ibm-apiconnect
+  source: ibm-apiconnect-catalog
+  sourceNamespace: openshift-marketplace
+	IBM App Connect - Integration dashboard, Integration design, Integration runtime
+
+	apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: ibm-appconnect
+  labels:
+    backup.appconnect.ibm.com/component: subscription        
+spec:
+  channel: v12.0-sc2
+  name: ibm-appconnect
+  source: appconnect-operator-catalogsource
+  sourceNamespace: openshift-marketplace
+	IBM MQ - Queue manager
+
+	apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: ibm-mq
+  labels:
+    backup.mq.ibm.com/component: subscription        
+spec:
+  channel: v3.2-sc2
+  name: ibm-mq
+  source: ibmmq-operator-catalogsource
+  sourceNamespace: openshift-marketplace
+	IBM Event Streams - Kafka cluster, Kafka topic, Kafka user, Kafka Connect runtime, Kafka connector
+
+	apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: ibm-eventstreams
+  labels:
+    backup.eventstreams.ibm.com/component: subscription        
+spec:
+  channel: v12.0
+  name: ibm-eventstreams
+  source: ibm-eventstreams
+  sourceNamespace: openshift-marketplace
+	IBM Event Endpoint Management - Event Manager, Event Gateway
+
+	apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: ibm-eventendpointmanagement
+  labels:
+    backup.events.ibm.com/component: subscription        
+spec:
+  channel: v11.6
+  name: ibm-eventendpointmanagement
+  source: ibm-eventendpointmanagement-catalog
+  sourceNamespace: openshift-marketplace
+	IBM Event Processing - Event Processing
+
+	apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: ibm-eventprocessing
+spec:
+  channel: v1.4
+  name: ibm-eventprocessing
+  source: ibm-eventprocessing-catalog
+  sourceNamespace: openshift-marketplace
+	IBM DataPower Gateway - Enterprise gateway
+Important: Do not apply this subscription if you already applied the subscription for the IBM API Connect operator 	apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: datapower-operator
+  labels:
+    backup.datapower.ibm.com/component: subscription        
+spec:
+  channel: v1.11-sc2
+  name: datapower-operator
+  source: ibm-datapower-operator-catalog
+  sourceNamespace: openshift-marketplace
+
+
+<img width="468" height="624" alt="image" src="https://github.com/user-attachments/assets/f1c29f8e-273a-499c-ac06-4b360984e5b6" />
+
