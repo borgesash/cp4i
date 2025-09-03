@@ -110,73 +110,102 @@ oc get sc
 ## Install Steps
 
 What will be deployed in which namespace?
-	namespace	command
-All Catalogsources	openshift-marketplace	oc get catalogsources -n openshift-marketplace
-
-All Operators	openshift-operators
-	oc get deployment -n openshift-operators
-Common Services (KeyCloak/EDB)	ibm-common-services	
-Platform Navigator Instance	tools	oc get platformnavigator -n tools
-MQ Instance	cp4i-mq	
-ACE Instance	cp4i-ace	
+| namespace      | what is deployed?       |
+| -------------- | -------------- |
+| openshift-marketplace| All Catalogsources|
+| openshift-operators| All Operators|
+| ibm-common-services| Common Services (KeyCloak/EDB)|
+| cp4i-mq| MQ instances|
+| cp4-ace| App Connect Instances|
 
 
-Deploy IBM Foundational Services
+### Deploy IBM Foundational Services
 
 Red Hat OpenShift Operators automate the creation, configuration, and management of instances of Kubernetes-native applications. Operators provide automation at every level of the stack—from managing the parts that make up the platform all the way to applications that are provided as a managed service.
 Red Hat OpenShift uses the power of Operators to run the entire platform in an autonomous fashion while exposing configuration natively through Kubernetes objects, allowing for quick installation and frequent, robust updates. In addition to the automation advantages of Operators for managing the platform, Red Hat OpenShift makes it easier to find, install, and manage Operators running on your clusters.
+
 The foundational services help you manage and administer IBM software on your cluster. IBM Cloud Pak foundational services component is included in several IBM Cloud Paks.
-1.	Installing Cert Manager (Required if using APIC/Event Manager/Event Processing)
+
+#### 1. Installing Cert Manager (Required if using APIC/Event Manager/Event Processing)
+
 Important: The API Connect cluster, Event Manager, and Event Processing instances require you to install an appropriate certificate manager. Follow the instructions in Installing the cert-manager Operator for Red Hat OpenShift to fulfill this requirement.
 OPTIONAL: To install via Openshift Console UI, follow the instructions in Installing the cert-manager Operator for Red Hat OpenShift
-a.	Create a namespace 
+
+- Create a namespace
+
+```
 oc new-project cert-manager-operator
+```
 
-b.	Create the following cert manager yaml files
+- Create the Operator
+
+	```yaml annotate
+	cat <<EOF | oc apply -f -
+	apiVersion: operators.coreos.com/v1
+	kind: OperatorGroup
+	metadata:
+	  name: cert-manager-operator
+	  namespace: cert-manager-operator 
+	spec:
+	  targetNamespaces:
+	  - cert-manager-operator
+	EOF
+	```
+		
+- Create the subscription
+
+	```yaml annotate
+	cat <<EOF | oc apply -f -
+	apiVersion: operators.coreos.com/v1alpha1
+	kind: Subscription
+	metadata:
+	  name: openshift-cert-manager-operator
+	  namespace: cert-manager-operator 
+	spec:
+	  channel: "stable-v1" 
+	  name: openshift-cert-manager-operator
+	  source: redhat-operators 
+	  sourceNamespace: openshift-marketplace
+	EOF
+	```
+		
+		<!-- oc apply -f cert-manager-operatorgroup.yaml -->
+		<!-- oc apply -f cert-manager-subscription.yaml -->
+
+- Confirm the subscription has been completed successfully before moving to the next step running the following command:
+		
+  		SUB_NAME=$(oc get deployment cert-manager-operator-controller-manager -n cert-manager-operator --ignore-not-found -o jsonpath='{.metadata.labels.olm\.owner}');if [ ! -z "$SUB_NAME" ]; then oc get csv/$SUB_NAME -n cert-manager-operator --ignore-not-found -o jsonpath='{.status.phase}';fi;echo
 	
-cert-manager-operatorgroup.yaml	apiVersion: operators.coreos.com/v1
-kind: OperatorGroup
-metadata:
-  name: cert-manager-operator
-  namespace: cert-manager-operator 
-spec:
-  targetNamespaces:
-  - cert-manager-operator
-cert-manager-subscription.yaml	apiVersion: operators.coreos.com/v1alpha1
-kind: Subscription
-metadata:
-  name: openshift-cert-manager-operator
-  namespace: cert-manager-operator 
-spec:
-  channel: "stable-v1" 
-  name: openshift-cert-manager-operator
-  source: redhat-operators 
-  sourceNamespace: openshift-marketplace
+  Wait Until You get a response like this:
+		Succeeded
 
-oc apply -f cert-manager-operatorgroup.yaml
-oc apply -f cert-manager-subscription.yaml
+#### 2. Install Common Services Catalog Source
 
-c.	Confirm the subscription has been completed successfully before moving to the next step running the following command:
-SUB_NAME=$(oc get deployment cert-manager-operator-controller-manager -n cert-manager-operator --ignore-not-found -o jsonpath='{.metadata.labels.olm\.owner}');if [ ! -z "$SUB_NAME" ]; then oc get csv/$SUB_NAME -n cert-manager-operator --ignore-not-found -o jsonpath='{.status.phase}';fi;echo
-Wait Until You get a response like this:
-Succeeded
+   - Deploy the Catalog Source
 
-2.	Install Common Services Catalog Source
+	oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-cp-common-services/4.6.17/OLM/catalog-sources.yaml
 
-a. Deploy the Catalog Source
-oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-cp-common-services/4.6.17/OLM/catalog-sources.yaml
-Note: Reference for correct catalog sources for CP4I v16.1.0: Catalog sources for operators
-Confirm the catalog source has been deployed successfully before moving to the next step running the following command:
-oc get catalogsources opencloud-operators -n openshift-marketplace -o jsonpath='{.status.connectionState.lastObservedState}';echo
-Wait Until You get a response like this:
-READY
+   Note: Reference for correct catalog sources for CP4I v16.1.0: Catalog sources for operators
 
-3.	Create common-services namespace:
-oc create namespace ibm-common-services
-4.	Install  common-services Operator:
+  - Confirm the catalog source has been deployed successfully before moving to the next step running the following command:
 
-Optional: Installing the operators by using the Red Hat OpenShift console
-e.	Create a Subscription for the IBM Cloud Pak foundational services operator using the example file. Save the file as common-service-subscription.yaml
+		oc get catalogsources opencloud-operators -n openshift-marketplace -o jsonpath='{.status.connectionState.lastObservedState}';echo
+
+    Wait Until You get a response like this:
+		READY
+
+#### 3. Create common-services namespace:
+
+		oc create namespace ibm-common-services
+
+#### 4. Install  common-services Operator:
+
+  Optional: Installing the operators by using the Red Hat OpenShift console
+
+  - Create a Subscription for the IBM Cloud Pak foundational services operator using the example file. Save the file as common-service-subscription.yaml
+
+```yaml annotate
+cat <<EOF | oc apply -f -
 apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
@@ -188,15 +217,21 @@ spec:
   name: ibm-common-service-operator
   source: opencloud-operators
   sourceNamespace: openshift-marketplace
+EOF
+```
 
-oc apply -f common-service-subscription.yaml -n openshift-operators
+<!-- oc apply -f common-service-subscription.yaml -n openshift-operators -->
 
-f.	Confirm the operator has been deployed successfully before moving to the next step running the following command:
-SUB_NAME=$(oc get deployment/ibm-common-service-operator -n openshift-operators --ignore-not-found -o jsonpath='{.metadata.labels.olm\.owner}');if [ ! -z "$SUB_NAME" ]; then oc get csv/$SUB_NAME --ignore-not-found -o jsonpath='{.status.phase}';fi;echo
-Wait Until You get a response like this:
-Succeeded
+   - Confirm the operator has been deployed successfully before moving to the next step running the following command:
+		
+  	SUB_NAME=$(oc get deployment/ibm-common-service-operator -n openshift-operators --ignore-not-found -o jsonpath='{.metadata.labels.olm\.owner}');if [ ! -z "$SUB_NAME" ]; then oc get csv/$SUB_NAME --ignore-not-found -o jsonpath='{.status.phase}';fi;echo
+   
+   Wait Until You get a response like this:
+		 Succeeded
 
-Deploy Platform Navigator
+
+
+### Deploy Platform Navigator
 
 Deploying the Platform UI allows you to deploy and manage instances from a central location.
 1.	Install Platform UI Catalog Source
@@ -268,11 +303,11 @@ Use the browser to login to the CP4I url and upon successfully reset of password
  
 
 
-Deploy Asset Repo (optional)
+### Deploy Asset Repo (optional)
 
 To be completed …. 
 
-Deploy Enterprise Messaging - MQ
+### Deploy Enterprise Messaging - MQ
 1.	Install MQ Catalog Source:
 
 •	Deploy the Catalog source
@@ -388,7 +423,7 @@ oc exec qmgr-demo-ibm-mq-0 -n cp4i-mq -- dspmq
 5.	In the platform Navigator, you will now see any instance of Queue Manager running. Click on the link to navigate to QM console.
  
 
-Deploy App Connect
+### Deploy App Connect
 
 1.	Install App Connect Catalog Source:
 a.	Apply the catalog source 
@@ -522,7 +557,7 @@ spec:
   replicas: 1
   version: '12.0'
 
-oc apply -f ace-designer-local-ai-instance.yaml -n cp4i-ace
+	oc apply -f ace-designer-local-ai-instance.yaml -n cp4i-ace
 
 b.	Confirm the instance has been deployed successfully before moving to the next step running the following command:
 oc get designerauthoring ace-designer-ai -n cp4i-ace -o jsonpath='{.status.phase}';echo
@@ -535,23 +570,14 @@ c.	Once deployed, you should see the ace-designer instance in the platform navig
 •	Deploy Integration runtime instances
 
 
-REFERENCES
+## Additional References
 
-Structing Deployments in Namespaces 
-What will be deployed in which namespace?
-	namespace	command
-All Catalogsources	openshift-marketplace	oc get catalogsources -n openshift-marketplace
-
-All Operators	openshift-operators
-	oc get deployment -n openshift-operators
-Common Services (KeyCloak/EDB)	ibm-common-services	
-Platform Navigator Instance	tools	oc get platformnavigator -n tools
-MQ Instance	cp4i-mq	
-ACE Instance	cp4i-ace	
+### Structing Deployments in Namespaces 
 
 
 
-CATALOG SOURCES
+
+### Catalog Sources
 Add a separate catalog source for each operator in your OpenShift cluster, to make the IBM operators available for installation. This task is also required to apply the fix packs for catalog sources, prior to an upgrade. Using a separate catalog source for each operator gives you full control of software versioning on an OpenShift cluster. It enables the following:
 •	Upgrade each Cloud Pak component independently.
 •	Have a fully declarative set of artifacts, which you can use to recreate exact installations.
@@ -598,7 +624,7 @@ optional	IBM Event Processing *
 
 	oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-eventprocessing/1.4.2/OLM/catalog-sources.yaml
 
-Subscription YAML 
+## Subscription list 
 
 Subscription YAML 
 Reference: For a full list of subscriptions, see Operators available to install.
