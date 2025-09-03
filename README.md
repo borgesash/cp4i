@@ -18,74 +18,96 @@ This guide assumes you already have an OCP cluster with the right version and ca
 Note: IBM Cloud Pak® for Integration 16.1.0 supports Red Hat OpenShift 4.12, 4.14, 4.15, 4.16, 4.17, 4.18, and 4.19. 
 
 ## Before you begin
-1.	Prepare for installation by reviewing the Planning section. Begin with these topics:
+a. Prepare for installation by reviewing the Planning section. Begin with these topics:
     Operating environment
     o	Storage considerations
     o	Considerations for high availability
     o	Structuring your deployment (Separate namespace vs global namespace)
-2.	Make decisions about how you will install the operators:
+b. Make decisions about how you will install the operators:
 o	Determine which Cloud Pak for Integration operators you need. For more information, see "Operators available to install" in Installing the operators by using the Red Hat OpenShift console. For more information about operators in general, see Operator reference.
 o	Decide which installation mode you will use to install the operators. For more information, see Installing the operators.
-3.	Install an appropriate OpenShift cluster. For more information, see Getting started in OpenShift Container Platform.
-4.	Tools required: 
-•	Install oc CLI
 
-5.	Obtaining your entitlement key
-a.	Go to the Container software library.
-b.	For any key that is listed, click Copy.
-Set your entitlement key:
-export ENT_KEY=<my-key>
-c.	(Optional) Verify the validity of the key by logging in to the IBM Entitled Registry by using a container tool.
-docker login cp.icr.io --username cp --password entitlement_key
-6.	Set the correct Storage type
-Storage options 
-Keycloak uses either the default storage class in Red Hat OpenShift Container Platform, or the storage class configured in the IBM Cloud Pak® foundational services Kubernetes resource. Before installing instances, do one of the following:
-•	Set a default storage class by adding the storageclass.kubernetes.io/is-default-class:'true' annotation in Red Hat OpenShift Container Platform.
-•	Specify a storage class name for spec.storageClass in the CommonService resource.
-a.	Identify current storage type
-Run command to identify the existing Storage type:
-oc get sc
-Your will get a response like this (then proceed with the steps below):
-NAME                                                                PROVISIONER                                                 RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
-localblock                                                        kubernetes.io/no-provisioner                     Delete                       WaitForFirstConsumer         false                                                18h
-ocs-storagecluster-ceph-rbd                    openshift-storage.rbd.csi.ceph.com        Delete                       Immediate                               true                                                  18h
-ocs-storagecluster-ceph-rgw                   openshift-storage.ceph.rook.io/bucket   Delete                       Immediate                               false                                                 18h
-ocs-storagecluster-cephfs (default)       openshift-storage.cephfs.csi.ceph.com   Delete                      Immediate                               true                                                   18h
-openshift-storage.noobaa.io                    openshift-storage.noobaa.io/obc               Delete                      Immediate                               false                                                  18h
+c. Install an appropriate OpenShift cluster. For more information, see Getting started in OpenShift Container Platform.
+
+d. Tools required: 
+	- Install oc CLI
+
+e. Obtaining your entitlement key
+
+   - Go to the Container software library.
+ 
+   - For any key that is listed, click Copy.
+		Set your entitlement key:
+		
+      ```
+      export ENT_KEY=<my-key>
+      ```
+ 
+   - (Optional) Verify the validity of the key by logging in to the IBM Entitled Registry by using a container tool.
+      ```
+      docker login cp.icr.io --username cp --password entitlement_key
+      ```
+  
+f. Set the correct Storage type
+    Storage options 
+    Keycloak uses either the default storage class in Red Hat OpenShift Container Platform, or the storage class configured in the IBM Cloud Pak® foundational services Kubernetes resource. Before installing instances, do one of the following:
+    * Set a default storage class by adding the storageclass.kubernetes.io/is-default-class:'true' annotation in Red Hat OpenShift Container Platform.
+    * Specify a storage class name for spec.storageClass in the CommonService resource.
+
+   - Identify current storage type
+     Run command to identify the existing Storage type:
+     ```
+     oc get sc
+     ```
+
+  Your will get a response like this (then proceed with the steps below):
+    NAME                                                                PROVISIONER                                                 RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
+    localblock                                                        kubernetes.io/no-provisioner                     Delete                       WaitForFirstConsumer         false                                                18h
+    ocs-storagecluster-ceph-rbd                    openshift-storage.rbd.csi.ceph.com        Delete                       Immediate                               true                                                  18h
+    ocs-storagecluster-ceph-rgw                   openshift-storage.ceph.rook.io/bucket   Delete                       Immediate                               false                                                 18h
+    ocs-storagecluster-cephfs (default)       openshift-storage.cephfs.csi.ceph.com   Delete                      Immediate                               true                                                   18h
+    openshift-storage.noobaa.io                    openshift-storage.noobaa.io/obc               Delete                      Immediate                               false                                                  18h
 
 
 For this demo environment, we are using ODF, so default storage will be ocs-storagecluster-ceph-rbd. 
-b.	Remove the existing default storage class
-Create sc-remove-default.yaml
+
+- Remove the existing default storage class
+
+  Create sc-remove-default.yaml with following content
+
+```yaml annotate
 metadata:
   annotations:
     storageclass.kubernetes.io/is-default-class: "false"
+```
+  Execute the follwing command
+  ```
+  oc get sc | grep default | awk '{system("oc patch storageclass " $1 " --patch-file sc-remove-default.yaml")}'
+  ```
 
-oc get sc | grep default | awk '{system("oc patch storageclass " $1 " --patch-file sc-remove-default.yaml")}'
-c.	Add the correct default storage class
-create sc-set-default.yaml
+- Add the correct default storage class
+
+  create sc-set-default.yaml with the following content
+```yaml annotate
 metadata:
   annotations:
     storageclass.kubernetes.io/is-default-class: "true"
+```
+  Execute the following command
+  ```
+  oc patch storageclass ocs-storagecluster-ceph-rbd --patch-file sc-set-default.yaml
+  ```
 
-oc patch storageclass ocs-storagecluster-ceph-rbd --patch-file sc-set-default.yaml
-
-d.	Validate the default storage class
+- Validate the default storage class
 	Run the following command to verify that the default storage class is correct set to your desired option. In this case it should be ocs-storagecluster-ceph-rbd
+```
 oc get sc 
-oc get sc
-NAME                                                                PROVISIONER                                                 RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
-localblock                                                        kubernetes.io/no-provisioner                     Delete                       WaitForFirstConsumer         false                                                18h
-ocs-storagecluster-ceph-rbd (default)   openshift-storage.rbd.csi.ceph.com        Delete                       Immediate                               true                                                  18h
-ocs-storagecluster-ceph-rgw                   openshift-storage.ceph.rook.io/bucket   Delete                       Immediate                               false                                                 18h
-ocs-storagecluster-cephfs                        openshift-storage.cephfs.csi.ceph.com   Delete                      Immediate                               true                                                   18h
-openshift-storage.noobaa.io                    openshift-storage.noobaa.io/obc               Delete                      Immediate                               false                                                  18h
+```
 
 <img width="1055" height="104" alt="image" src="https://github.com/user-attachments/assets/0c7c632f-a89d-420a-a06e-bc6413153f16" />
 
 
-
-Install Steps
+## Install Steps
 
 What will be deployed in which namespace?
 	namespace	command
