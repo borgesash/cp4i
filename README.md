@@ -7,7 +7,7 @@ We will install the following components of CP4I:
 •	Queue Manager
 •	App Connect Enterprise Integration Servers
 
-Overview
+## Overview
 IBM Cloud Pak® for Integration installation consists of a Red Hat® OpenShift® Container Platform cluster with one or more operators installed and one or more deployed instances. You can complete all the installation steps yourself or simplify the process by installing on a managed OpenShift cluster from a cloud provider.
 The main installation tasks are as follows:
 1.	Add catalog sources, to make the Cloud Pak for Integration operators available to the cluster.
@@ -17,7 +17,7 @@ The main installation tasks are as follows:
 This guide assumes you already have an OCP cluster with the right version and capacity up and running. The demo is based upon OCP v4.16.x with 5 worker nodes 32 vCPUs X 128 GB memory each. 
 Note: IBM Cloud Pak® for Integration 16.1.0 supports Red Hat OpenShift 4.12, 4.14, 4.15, 4.16, 4.17, 4.18, and 4.19. 
 
-Before you begin
+## Before you begin
 1.	Prepare for installation by reviewing the Planning section. Begin with these topics:
     Operating environment
     o	Storage considerations
@@ -81,6 +81,7 @@ ocs-storagecluster-ceph-rgw                   openshift-storage.ceph.rook.io/buc
 ocs-storagecluster-cephfs                        openshift-storage.cephfs.csi.ceph.com   Delete                      Immediate                               true                                                   18h
 openshift-storage.noobaa.io                    openshift-storage.noobaa.io/obc               Delete                      Immediate                               false                                                  18h
 
+<img width="1055" height="104" alt="image" src="https://github.com/user-attachments/assets/0c7c632f-a89d-420a-a06e-bc6413153f16" />
 
 
 
