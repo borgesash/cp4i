@@ -234,15 +234,25 @@ EOF
 ### Deploy Platform Navigator
 
 Deploying the Platform UI allows you to deploy and manage instances from a central location.
+
 1.	Install Platform UI Catalog Source
 Note: Reference for correct catalog sources for CP4I v16.1.0: Catalog sources for operators
-oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-integration-platform-navigator/7.3.16/OLM/catalog-sources.yaml
+
+		oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-integration-platform-navigator/7.3.16/OLM/catalog-sources.yaml
+
 Confirm the catalog source has been deployed successfully before moving to the next step running the following command:
-oc get catalogsources ibm-integration-platform-navigator-catalog -n openshift-marketplace -o jsonpath='{.status.connectionState.lastObservedState}';echo
+
+		oc get catalogsources ibm-integration-platform-navigator-catalog -n openshift-marketplace -o jsonpath='{.status.connectionState.lastObservedState}';echo
+  
 Wait Until You get a response like this:
-READY
+		READY
+
 2.	Install Operator:
-a.	Create a Subscription for the IBM Cloud Pak foundational services operator using the example file. Save the file as platform-navigator-subscription.yaml
+   
+a.	Create a Subscription for the IBM Cloud Pak foundational services operator
+
+```yaml annotate
+cat <<EOF | oc apply -f -
 #reference source: https://github.ibm.com/joel-gomez/cp4i-demo/blob/main/subscriptions/16.1.0/01-platform-navigator-subscription.yaml
 apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
@@ -254,22 +264,34 @@ spec:
   name: ibm-integration-platform-navigator
   source: ibm-integration-platform-navigator-catalog
   sourceNamespace: openshift-marketplace
+EOF
+```
 
-oc apply -f platform-navigator-subscription.yaml -n openshift-operators
+<!-- oc apply -f platform-navigator-subscription.yaml -n openshift-operators -->
 
 b.	Confirm the operator has been deployed successfully before moving to the next step running the following command:
-SUB_NAME=$(oc get deployment ibm-integration-platform-navigator-operator -n openshift-operators --ignore-not-found -o jsonpath='{.metadata.labels.olm\.owner}');if [ ! -z "$SUB_NAME" ]; then oc get csv/$SUB_NAME --ignore-not-found -o jsonpath='{.status.phase}';fi;echo
-Wait Until You get a response like this(after few minutes):
-Succeeded
-		Note: You may be seeing a response of PENDING which indicates the deployment is underway butnot yet complete. Wait until the READY response is received before continuing.
-3.	Deploy the Platform UI instance 
+
+	SUB_NAME=$(oc get deployment ibm-integration-platform-navigator-operator -n openshift-operators --ignore-not-found -o jsonpath='{.metadata.labels.olm\.owner}');if [ ! -z "$SUB_NAME" ]; then oc get csv/$SUB_NAME --ignore-not-found -o jsonpath='{.status.phase}';fi;echo
+ 
+   Wait Until You get a response like this(after few minutes):
+	  Succeeded
+	_Note: You may be seeing a response of PENDING which indicates the deployment is underway butnot yet complete. Wait until the READY response is received before continuing._
+  
+3.	Deploy the Platform UI instance
+   
 a.	Create Platform UI namespace and add pull secret to Namespace
-oc new-project tools
 
-oc create secret docker-registry ibm-entitlement-key   --docker-username=cp    --docker-password=$ENT_KEY  --docker-server=cp.icr.io     --namespace=tools
-Note: The IBM Entitled Registry contains software images for the instances in IBM Cloud Pak® for Integration. To allow the operators to automatically pull those software images, you must first obtain your entitlement key, then add your entitlement key in a pull secret. Your entitlement key must be added to the OpenShift cluster as a pull secret to deploy instances. Adding a global pull secret enables deployment of instances in all namespaces. The alternative is to add a pull secret to each namespace in which you plan to deploy instances (any namespace with operators), plus the `openshift-operators` namespace. However, this option adds work to your installation process.
+	oc new-project tools
 
-b.	Create a PlatformNavigator YAML file. For example, you could create a file called platform-ui-instance.yaml with the following example configuration. 
+	oc create secret docker-registry ibm-entitlement-key   --docker-username=cp    --docker-password=$ENT_KEY  --docker-server=cp.icr.io     --namespace=tools
+ 
+   __Note: The IBM Entitled Registry contains software images for the instances in IBM Cloud Pak® for Integration. To allow the operators to automatically pull those software images, you must first obtain your entitlement key, then add your entitlement key in a pull secret. Your entitlement key must be added to the OpenShift cluster as a pull secret to deploy instances. Adding a global pull secret enables deployment of instances in all namespaces. The alternative is to add a pull secret to each namespace in which you plan to deploy instances (any namespace with operators), plus the 'openshift-operators' namespace. However, this option adds work to your installation process._
+
+
+b.	Create a PlatformNavigator with the following configuration. 
+
+```yaml annotate
+cat <<EOF | oc apply -f -
 apiVersion: integration.ibm.com/v1beta1
 kind: PlatformNavigator
 metadata:
@@ -283,23 +305,32 @@ spec:
     license: L-JTPV-KYG8TF
   replicas: 3
   version: 16.1.0
+EOF
+```
+  <!-- oc apply -f platform-ui-instance.yaml  -n tools -->
 
-oc apply -f platform-ui-instance.yaml  -n tools
 c.	Check the status of the Platform UI instance by running the following command in the project (namespace) where it was deployed:
-oc get platformnavigator cp4i-navigator -n tools -o jsonpath='{.status.conditions[0].type}';echo
 
-Wait Until You get a response like this: (Note: This can take upto 15mins)
-Ready
+	oc get platformnavigator cp4i-navigator -n tools -o jsonpath='{.status.conditions[0].type}';echo
+
+   Wait Until You get a response like this: (Note: This can take upto 15mins)
+       Ready
 
 d.	Once the Platform UI instance is up and running get the access info:
-Execute the following commands to retrieve the CP4I_URL, USER and Password:
-oc get platformnavigator cp4i-navigator -n tools -o jsonpath='{.status.endpoints[?(@.name=="navigator")].uri}'
-oc get secret integration-admin-initial-temporary-credentials -n ibm-common-services -o jsonpath={.data.username} | base64 -d
-oc get secret integration-admin-initial-temporary-credentials -n ibm-common-services -o jsonpath={.data.password} | base64 -d
-Note the password is temporary and you will be required to change it the first time you log into Platform UI.
 
-4.	Login to CP4I 
-Use the browser to login to the CP4I url and upon successfully reset of password, you should see the following screen
+Execute the following commands to retrieve the CP4I_URL, USER and Password:
+
+	oc get platformnavigator cp4i-navigator -n tools -o jsonpath='{.status.endpoints[?(@.name=="navigator")].uri}'
+ 
+	oc get secret integration-admin-initial-temporary-credentials -n ibm-common-services -o jsonpath={.data.username} | base64 -d
+ 
+	oc get secret integration-admin-initial-temporary-credentials -n ibm-common-services -o jsonpath={.data.password} | base64 -d
+ 
+   _Note the password is temporary and you will be required to change it the first time you log into Platform UI._
+
+4.	Login to CP4I
+   
+	Use the browser to login to the CP4I url and upon successfully reset of password, you should see the following screen
  
 
 
