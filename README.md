@@ -350,6 +350,7 @@ Use the browser to login to the CP4I url and upon successfully reset of password
 To be completed …. 
 
 ### Deploy Enterprise Messaging - MQ
+
 <details closed>
 <summary>Click to open</summary>
 
@@ -492,13 +493,15 @@ EOF
   d. Wait Until You get a response like this:
       `Running`
 	  
-•	Execute the following command to verify that QMGR is running
+  e. Execute the following command to verify that QMGR is running
 
 		oc exec qmgr-demo-ibm-mq-0 -n cp4i-mq -- dspmq
 
 5.	In the platform Navigator, you will now see any instance of Queue Manager running. Click on the link to navigate to QM console.
 
    <img width="1917" height="636" alt="image" src="https://github.com/user-attachments/assets/44928bac-a75c-49f7-b5bf-7f54283ec1e1" />
+
+   <img width="1917" height="806" alt="image" src="https://github.com/user-attachments/assets/17b8d24a-61bf-4b18-8a48-ccde6e783746" />
 
 
 </details>
