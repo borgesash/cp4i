@@ -745,14 +745,16 @@ Reference: https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.0?topic=im
 ## Subscription list 
 
 Subscription YAML 
-Reference: For a full list of subscriptions, see [Operators available to install.](https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.0?topic=operators-installing-by-using-cli#operators-available)
+
+Here are the Subscription YAML files used for building the env, which is based upon CP4I 16.1.0
+For a full list of subscriptions, see [Operators available to install.](https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.0?topic=operators-installing-by-using-cli#operators-available)
+
 <details closed>
 <summary>Click to open</summary>
 
-		
-	IBM Cloud Pak for Integration - Platform UI, Assembly, API, API Product, Messaging server, Messaging channel, Messaging queue, Messaging user
-
-	apiVersion: operators.coreos.com/v1alpha1
+- IBM Cloud Pak for Integration - Platform UI, Assembly, API, API Product, Messaging server, Messaging channel, Messaging queue, Messaging user
+``` yaml annotate
+apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
   name: ibm-integration-platform-navigator
@@ -764,9 +766,11 @@ spec:
   name: ibm-integration-platform-navigator
   source: ibm-integration-platform-navigator-catalog
   sourceNamespace: openshift-marketplace
-	IBM Cloud Pak foundational services - Cloud Pak foundational services for Cloud Native PostgreSQL and RedHat Build of Keycloak only
+```
 
-	apiVersion: operators.coreos.com/v1alpha1
+- IBM Cloud Pak foundational services - Cloud Pak foundational services for Cloud Native PostgreSQL and RedHat Build of Keycloak only
+``` yaml annotate
+apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
   name: ibm-common-service-operator
@@ -778,9 +782,11 @@ spec:
   name: ibm-common-service-operator
   source: opencloud-operators
   sourceNamespace: openshift-marketplace
-	IBM Automation foundation assets - Automation assets
+```
 
-	apiVersion: operators.coreos.com/v1alpha1
+- IBM Automation foundation assets - Automation assets
+``` yaml annotate
+apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
   name: ibm-integration-asset-repository
@@ -791,9 +797,11 @@ spec:
   name: ibm-integration-asset-repository
   source: ibm-integration-asset-repository-catalog
   sourceNamespace: openshift-marketplace
-	IBM API Connect - API Connect cluster, API Manager, API Analytics, API Portal, API Gateway
+```
 
-	apiVersion: operators.coreos.com/v1alpha1
+- IBM API Connect - API Connect cluster, API Manager, API Analytics, API Portal, API Gateway
+``` yaml annotate
+apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
   name: ibm-apiconnect
@@ -804,9 +812,11 @@ spec:
   name: ibm-apiconnect
   source: ibm-apiconnect-catalog
   sourceNamespace: openshift-marketplace
-	IBM App Connect - Integration dashboard, Integration design, Integration runtime
-
-	apiVersion: operators.coreos.com/v1alpha1
+```
+	
+- IBM App Connect - Integration dashboard, Integration design, Integration runtime
+``` yaml annotate
+apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
   name: ibm-appconnect
@@ -817,9 +827,11 @@ spec:
   name: ibm-appconnect
   source: appconnect-operator-catalogsource
   sourceNamespace: openshift-marketplace
-	IBM MQ - Queue manager
+```
 
-	apiVersion: operators.coreos.com/v1alpha1
+- IBM MQ - Queue manager
+``` yaml annotate
+apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
   name: ibm-mq
@@ -830,9 +842,11 @@ spec:
   name: ibm-mq
   source: ibmmq-operator-catalogsource
   sourceNamespace: openshift-marketplace
-	IBM Event Streams - Kafka cluster, Kafka topic, Kafka user, Kafka Connect runtime, Kafka connector
+```
 
-	apiVersion: operators.coreos.com/v1alpha1
+- IBM Event Streams - Kafka cluster, Kafka topic, Kafka user, Kafka Connect runtime, Kafka connector
+``` yaml annotate
+apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
   name: ibm-eventstreams
@@ -843,9 +857,11 @@ spec:
   name: ibm-eventstreams
   source: ibm-eventstreams
   sourceNamespace: openshift-marketplace
-	IBM Event Endpoint Management - Event Manager, Event Gateway
+```
 
-	apiVersion: operators.coreos.com/v1alpha1
+- IBM Event Endpoint Management - Event Manager, Event Gateway
+``` yaml annotate
+apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
   name: ibm-eventendpointmanagement
@@ -856,9 +872,11 @@ spec:
   name: ibm-eventendpointmanagement
   source: ibm-eventendpointmanagement-catalog
   sourceNamespace: openshift-marketplace
-	IBM Event Processing - Event Processing
+```
 
-	apiVersion: operators.coreos.com/v1alpha1
+- IBM Event Processing - Event Processing
+``` yaml annotate
+apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
   name: ibm-eventprocessing
@@ -867,8 +885,12 @@ spec:
   name: ibm-eventprocessing
   source: ibm-eventprocessing-catalog
   sourceNamespace: openshift-marketplace
-	IBM DataPower Gateway - Enterprise gateway
-Important: Do not apply this subscription if you already applied the subscription for the IBM API Connect operator 	apiVersion: operators.coreos.com/v1alpha1
+```
+
+- IBM DataPower Gateway - Enterprise gateway
+  _Important: Do not apply this subscription if you already applied the subscription for the IBM API Connect operator
+``` yaml annotate
+apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
   name: datapower-operator
@@ -879,8 +901,10 @@ spec:
   name: datapower-operator
   source: ibm-datapower-operator-catalog
   sourceNamespace: openshift-marketplace
+```
 
 </details>
 
+<!-- 
 <img width="468" height="624" alt="image" src="https://github.com/user-attachments/assets/f1c29f8e-273a-499c-ac06-4b360984e5b6" />
-
+-->
