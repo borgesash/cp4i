@@ -54,11 +54,14 @@ f. Set the correct Storage type
     * Set a default storage class by adding the storageclass.kubernetes.io/is-default-class:'true' annotation in Red Hat OpenShift Container Platform.
     * Specify a storage class name for spec.storageClass in the CommonService resource.
 
+<details closed>
+<summary>Click to open</summary>
+	
    - Identify current storage type
      Run command to identify the existing Storage type:
-     ```
-     oc get sc
-     ```
+```
+oc get sc
+```
 
   Your will get a response like this showing 'ocs-storagecluster-cephfs (default)' (then proceed with the steps below):
 
@@ -112,7 +115,7 @@ oc get sc
 ```
 
 <img width="1055" height="104" alt="image" src="https://github.com/user-attachments/assets/0c7c632f-a89d-420a-a06e-bc6413153f16" />
-
+</details>
 
 ## Install Steps
 
@@ -127,6 +130,8 @@ What will be deployed in which namespace?
 
 
 ### Deploy IBM Foundational Services
+<details closed>
+<summary>Click to open</summary>
 
 Red Hat OpenShift Operators automate the creation, configuration, and management of instances of Kubernetes-native applications. Operators provide automation at every level of the stack—from managing the parts that make up the platform all the way to applications that are provided as a managed service.
 Red Hat OpenShift uses the power of Operators to run the entire platform in an autonomous fashion while exposing configuration natively through Kubernetes objects, allowing for quick installation and frequent, robust updates. In addition to the automation advantages of Operators for managing the platform, Red Hat OpenShift makes it easier to find, install, and manage Operators running on your clusters.
@@ -235,11 +240,12 @@ EOF
    
    Wait Until You get a response like this: 
    `Succeeded`
-
+</details>
 
 
 ### Deploy Platform Navigator
-
+<details closed>
+<summary>Click to open</summary>
 Deploying the Platform UI allows you to deploy and manage instances from a central location.
 
 1. Install Platform UI Catalog Source
@@ -337,13 +343,16 @@ Execute the following commands to retrieve the CP4I_URL, USER and Password:
 Use the browser to login to the CP4I url and upon successfully reset of password, you should see the following screen
  
 <img width="1917" height="636" alt="image" src="https://github.com/user-attachments/assets/d33a090f-5dac-41f8-94b1-413dfc3e712f" />
-
+</details>
 
 ### Deploy Asset Repo (optional)
 
 To be completed …. 
 
 ### Deploy Enterprise Messaging - MQ
+<details closed>
+<summary>Click to open</summary>
+
 1.	Install MQ Catalog Source:
 
    a. Deploy the Catalog source
@@ -489,9 +498,11 @@ EOF
 
 5.	In the platform Navigator, you will now see any instance of Queue Manager running. Click on the link to navigate to QM console.
 
- 
+</details>
 
 ### Deploy App Connect
+<details closed>
+<summary>Click to open</summary>
 
 1.	Install App Connect Catalog Source:
 a.	Apply the catalog source 
@@ -646,11 +657,13 @@ oc get designerauthoring ace-designer-ai -n cp4i-ace -o jsonpath='{.status.phase
 Wait Until You get a response like this:
 Ready
 c.	Once deployed, you should see the ace-designer instance in the platform navigator ui
-		 		
+
+
 
 6.	Additional components as needed
 •	Deploy Integration runtime instances
 
+</details>
 
 ## Additional References
 
@@ -669,47 +682,30 @@ Add a separate catalog source for each operator in your OpenShift cluster, to ma
 CATALOG SOURCE YAML
 Reference: https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.0?topic=images-adding-catalog-sources-openshift-cluster#catalog-sources-for-operators__title__1
 
-		
-1	IBM Cloud Pak foundational services
+<details closed>
+<summary>Click to open</summary>
 
-	oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-cp-common-services/4.6.17/OLM/catalog-sources.yaml
+| Name of Service      | Command reference       |
+| -------------- | -------------- |
+| IBM Cloud Pak foundational services | ```oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-cp-common-services/4.6.17/OLM/catalog-sources.yaml``` |
+| IBM Cloud Pak for Integration | ```oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-integration-platform-navigator/7.3.16/OLM/catalog-sources.yaml``` |
+| IBM Automation foundation assets | ``` oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-integration-asset-repository/1.7.13/OLM/catalog-sources-linux-amd64.yaml ``` \
+| IBM API Connect | ``` oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-apiconnect/5.5.0/OLM/catalog-sources.yaml ``` |
+| IBM App Connect | ``` oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-appconnect/12.0.15/OLM/catalog-sources.yaml ``` |
+| IBM MQ | ``` oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-mq/3.2.14/OLM/catalog-sources.yaml ``` |
+| IBM DataPower Gateway | ``` oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-datapower-operator/1.11.7/OLM/catalog-sources.yaml ``` |
+| IBM Event Streams | ``` oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-eventstreams/12.0.0/OLM/catalog-sources.yaml ``` |
+| IBM Event Endpoint Management | ``` oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-eventendpointmanagement/11.6.3/OLM/catalog-sources.yaml ``` |
+| IBM Event Processing | ``` oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-eventprocessing/1.4.2/OLM/catalog-sources.yaml ``` |
 
-2	IBM Cloud Pak for Integration
-
-	oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-integration-platform-navigator/7.3.16/OLM/catalog-sources.yaml
-optional	IBM Automation foundation assets
-
-	oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-integration-asset-repository/1.7.13/OLM/catalog-sources-linux-amd64.yaml
-4	IBM API Connect
-
-	oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-apiconnect/5.5.0/OLM/catalog-sources.yaml
-6	IBM App Connect
-
-	oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-appconnect/12.0.15/OLM/catalog-sources.yaml
-5	IBM MQ
-
-	oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-mq/3.2.14/OLM/catalog-sources.yaml
-3	IBM DataPower Gateway
-
-	oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-datapower-operator/1.11.7/OLM/catalog-sources.yaml
-
-		
-optional	IBM Event Streams
-
-	oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-eventstreams/12.0.0/OLM/catalog-sources.yaml
-
-optional	IBM Event Endpoint Management
-
-	oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-eventendpointmanagement/11.6.3/OLM/catalog-sources.yaml
-
-optional	IBM Event Processing *
-
-	oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-eventprocessing/1.4.2/OLM/catalog-sources.yaml
+</details>
 
 ## Subscription list 
 
 Subscription YAML 
-Reference: For a full list of subscriptions, see Operators available to install.
+Reference: For a full list of subscriptions, see [Operators available to install.](https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.0?topic=operators-installing-by-using-cli#operators-available)
+<details closed>
+<summary>Click to open</summary>
 
 		
 	IBM Cloud Pak for Integration - Platform UI, Assembly, API, API Product, Messaging server, Messaging channel, Messaging queue, Messaging user
@@ -842,6 +838,7 @@ spec:
   source: ibm-datapower-operator-catalog
   sourceNamespace: openshift-marketplace
 
+</details>
 
 <img width="468" height="624" alt="image" src="https://github.com/user-attachments/assets/f1c29f8e-273a-499c-ac06-4b360984e5b6" />
 
