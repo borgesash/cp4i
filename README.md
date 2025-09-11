@@ -364,7 +364,7 @@ To be completed ….
 	oc get catalogsources ibmmq-operator-catalogsource -n openshift-marketplace -o jsonpath='{.status.connectionState.lastObservedState}';echo
  
    Wait Until You get a response like this:
-      READY
+      `READY`
 	  
 2.	Install MQ Operator (2-5 mins):
    
@@ -393,7 +393,7 @@ EOF
 
   
    c. Wait Until You get a response like this:
-      Succeeded
+      `Succeeded`
 
    
 3.	Create MQ namespace and add pull secret to Namespace
@@ -490,13 +490,16 @@ EOF
 		oc get queuemanager qmgr-demo -n cp4i-mq -o jsonpath='{.status.phase}';echo
   
   d. Wait Until You get a response like this:
-      Running
+      `Running`
 	  
 •	Execute the following command to verify that QMGR is running
 
 		oc exec qmgr-demo-ibm-mq-0 -n cp4i-mq -- dspmq
 
 5.	In the platform Navigator, you will now see any instance of Queue Manager running. Click on the link to navigate to QM console.
+
+   <img width="1917" height="636" alt="image" src="https://github.com/user-attachments/assets/44928bac-a75c-49f7-b5bf-7f54283ec1e1" />
+
 
 </details>
 
@@ -508,9 +511,12 @@ EOF
 a.	Apply the catalog source 
 
 b.	Confirm the catalog source has been deployed successfully before moving to the next step running the following command:
-oc get catalogsources appconnect-operator-catalogsource -n openshift-marketplace -o jsonpath='{.status.connectionState.lastObservedState}';echo
+
+	oc get catalogsources appconnect-operator-catalogsource -n openshift-marketplace -o jsonpath='{.status.connectionState.lastObservedState}';echo
+ 
 Wait Until You get a response like this:
-READY
+`READY`
+
 2.	Install App Connect Operator: (Time Install ~2 mins)
 
 a.	Create app-connect-subscription.yaml
@@ -533,21 +539,28 @@ EOF
 ```
 
 oc apply -f app-connect-subscription.yaml -n openshift-operators
+
 b.	Confirm the operator has been deployed successfully before moving to the next step running the following command:
-SUB_NAME=$(oc get deployment ibm-appconnect-operator -n openshift-operators --ignore-not-found -o jsonpath='{.metadata.labels.olm\.owner}');if [ ! -z "$SUB_NAME" ]; then oc get csv/$SUB_NAME --ignore-not-found -o jsonpath='{.status.phase}';fi;echo
+
+	SUB_NAME=$(oc get deployment ibm-appconnect-operator -n openshift-operators --ignore-not-found -o jsonpath='{.metadata.labels.olm\.owner}');if [ ! -z "$SUB_NAME" ]; then oc get csv/$SUB_NAME --ignore-not-found -o jsonpath='{.status.phase}';fi;echo
+
 Wait Until You get a response like this:
-Succeeded
+`Succeeded`
+
 3.	Create new namespace and add entitlement key as secret
 
-oc new-project cp4i-ace
+		oc new-project cp4i-ace
 
-oc create secret docker-registry ibm-entitlement-key   --docker-username=cp    --docker-password=$ENT_KEY  --docker-server=cp.icr.io     --namespace=cp4i-ace
+		oc create secret docker-registry ibm-entitlement-key   --docker-username=cp    --docker-password=$ENT_KEY  --docker-server=cp.icr.io     --namespace=cp4i-ace
 
 4.	Deploy Dashboard instance:
+   
 a.	Create ace-dashboard-instance.yaml file
-For OCP_TYPE=ODF; set OCP_FILE_STORAGE='ocs-storagecluster-cephfs'
-(This yaml can also be generated via the platform navigator UI)
-(Navigate to Platform UI  Click Create Instance  Pick Integration Dashboard  Click next  Pick QuickStart configuration  Click Next  Toggle Advance Setting toggle switch  Enter the details  Click YAML ) Either copy+paste the new YAML or continue deploying MQ instance via UI)
+
+For OCP_TYPE=ODF; set OCP_FILE_STORAGE=`ocs-storagecluster-cephfs`
+
+_(This yaml can also be generated via the platform navigator UI)
+(Navigate to Platform UI  Click Create Instance  Pick Integration Dashboard  Click next  Pick QuickStart configuration  Click Next  Toggle Advance Setting toggle switch  Enter the details  Click YAML ) Either copy+paste the new YAML or continue deploying MQ instance via UI)_
 
 ```yaml annotate
 cat <<EOF | oc apply -f -
@@ -600,9 +613,12 @@ EOF
 <!-- oc apply -f  ace-dashboard-instance.yaml -n cp4i-ace -->
 
 b.	Confirm the instance has been deployed successfully before moving to the next step running the following command:
-oc get dashboard ace-dashboard -n cp4i-ace -o jsonpath='{.status.phase}';echo
-Wait Until You get a response like this:
-Ready
+
+	oc get dashboard ace-dashboard -n cp4i-ace -o jsonpath='{.status.phase}';echo
+ 
+  Wait Until You get a response like this:
+  `Ready`
+  
 c.	You should Now see the ace-dashboard instance in the Platform Navigator UI
 		 
 
