@@ -497,10 +497,12 @@ EOF
 
 		oc exec qmgr-demo-ibm-mq-0 -n cp4i-mq -- dspmq
 
-5.	In the platform Navigator, you will now see any instance of Queue Manager running. Click on the link to navigate to QM console.
+5.	In the platform Navigator, you will now see any instance of Queue Manager running. 
 
    <img width="1917" height="636" alt="image" src="https://github.com/user-attachments/assets/44928bac-a75c-49f7-b5bf-7f54283ec1e1" />
 
+   Click on the qmgr-demo link to navigate to Queue Manager console.
+   
    <img width="1917" height="806" alt="image" src="https://github.com/user-attachments/assets/17b8d24a-61bf-4b18-8a48-ccde6e783746" />
 
 
@@ -625,6 +627,12 @@ EOF
   
   d. You should now see the ace-dashboard instance in the Platform Navigator UI
 
+<img width="1917" height="806" alt="image" src="https://github.com/user-attachments/assets/e3352cba-1cca-4987-a3ff-d51a8c3722c5" />
+
+   Click on the ace-dashboard link to navigate to ACE 
+   
+<img width="1917" height="806" alt="image" src="https://github.com/user-attachments/assets/e263fe9e-318f-4da3-8d43-3ed92b015ca1" />
+
 
 
 5.	Deploy Designer Authoring instance 
@@ -674,7 +682,7 @@ spec:
 EOF
 ```
 
-	oc apply -f ace-designer-local-ai-instance.yaml -n cp4i-ace
+<!-- oc apply -f ace-designer-local-ai-instance.yaml -n cp4i-ace -->
 
    b. Confirm the instance has been deployed successfully before moving to the next step running the following command:
 
@@ -685,7 +693,6 @@ EOF
  
    d. Once deployed, you should see the ace-designer instance in the platform navigator ui
 
-<img width="1917" height="806" alt="image" src="https://github.com/user-attachments/assets/e3352cba-1cca-4987-a3ff-d51a8c3722c5" />
 
 
 
