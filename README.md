@@ -693,6 +693,12 @@ EOF
  
    d. Once deployed, you should see the ace-designer instance in the platform navigator ui
 
+<img width="1917" height="806" alt="image" src="https://github.com/user-attachments/assets/5b5b9234-b43d-48a4-8529-a92199bcfdea" />
+
+Click on the ace-designer-ai instance to launch the ACE Designer
+
+<img width="1917" height="806" alt="image" src="https://github.com/user-attachments/assets/e1586967-d0fe-4a99-99b3-757a1c06f9dc" />
+
 
 
 
