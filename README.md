@@ -2,13 +2,15 @@
 This guide installs Cloud Pak for Integration on an Openshift cluster.
 
 Reference: https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.0?topic=installing
-This install guide is for CP4I v16.1.0. This is the latest SC-2 (long term support) version of Cloud Pak for Integration. For the latest CD release, see What's new in Cloud Pak for Integration 16.1.2.
+This install guide is for CP4I v16.1.0. This is the latest SC-2 (long term support) version of Cloud Pak for Integration. For the latest CD release, see [What's new in Cloud Pak for Integration 16.1.2] (https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.2?topic=whats-new-in-cloud-pak-integration-1612)
+
 We will install the following components of CP4I: 
-•	Queue Manager
-•	App Connect Enterprise Integration Servers
+- Queue Manager
+- App Connect Enterprise Integration Servers
 
 ## Overview
 IBM Cloud Pak® for Integration installation consists of a Red Hat® OpenShift® Container Platform cluster with one or more operators installed and one or more deployed instances. You can complete all the installation steps yourself or simplify the process by installing on a managed OpenShift cluster from a cloud provider.
+
 The main installation tasks are as follows:
 1.	Add catalog sources, to make the Cloud Pak for Integration operators available to the cluster.
 2.	Install the Cloud Pak for Integration operators.
@@ -18,24 +20,30 @@ This guide assumes you already have an OCP cluster with the right version and ca
 Note: IBM Cloud Pak® for Integration 16.1.0 supports Red Hat OpenShift 4.12, 4.14, 4.15, 4.16, 4.17, 4.18, and 4.19. 
 
 ## Before you begin
-a. Prepare for installation by reviewing the Planning section. Begin with these topics:
-    Operating environment
-    o	Storage considerations
-    o	Considerations for high availability
-    o	Structuring your deployment (Separate namespace vs global namespace)
-b. Make decisions about how you will install the operators:
-o	Determine which Cloud Pak for Integration operators you need. For more information, see "Operators available to install" in Installing the operators by using the Red Hat OpenShift console. For more information about operators in general, see Operator reference.
-o	Decide which installation mode you will use to install the operators. For more information, see Installing the operators.
+<details closed>
 
-c. Install an appropriate OpenShift cluster. For more information, see Getting started in OpenShift Container Platform.
+a. Prepare for installation by reviewing the [Planning](https://www.ibm.com/docs/en/SSGT7J_16.1.0/planning/planning.html) section. 
+   Begin with these topics:
+    - [Operating environment](https://www.ibm.com/docs/en/SSGT7J_16.1.0/planning/operating_environment.html)
+    - [Storage considerations](https://www.ibm.com/docs/en/SSGT7J_16.1.0/planning/storage.html)
+    - [Considerations for high availability](https://www.ibm.com/docs/en/SSGT7J_16.1.0/planning/high_availability.html)
+    - [Structuring your deployment](https://www.ibm.com/docs/en/SSGT7J_16.1.0/planning/deployment_considerations.html) (Separate namespace vs global namespace)
+	
+b. Make decisions about how you will install the operators:
+ 
+   - Determine which Cloud Pak for Integration operators you need. For more information, see "Operators available to install" in [Installing the operators by using the Red Hat OpenShift console](https://www.ibm.com/docs/en/SSGT7J_16.1.0/install/install_operators.html). For more information about operators in general, see [Operator reference](https://www.ibm.com/docs/en/SSGT7J_16.1.0/reference/operators_reference.html).
+   - Decide which installation mode you will use to install the operators. For more information, see [Installing the operators](https://www.ibm.com/docs/en/SSGT7J_16.1.0/install/install_operators_container.html).
+
+c. Install an appropriate OpenShift cluster. 
+   For more information, see [Getting started in OpenShift Container Platform](https://www.ibm.com/links?url=https%3A%2F%2Fdocs.redhat.com%2Fen%2Fdocumentation%2Fopenshift_container_platform%2F4.14%2Fhtml%2Fabout%2Fwelcome-index).
 
 d. Tools required: 
-	- Install oc CLI
+
+   - Install [oc CLI](https://docs.redhat.com/en/documentation/openshift_container_platform/4.16/html/cli_tools/openshift-cli-oc#cli-getting-started)
 
 e. Obtaining your entitlement key
 
-   - Go to the Container software library.
- 
+   - Go to the [Container software library](https://myibm.ibm.com/products-services/containerlibrary).
    - For any key that is listed, click Copy.
 		Set your entitlement key:
 		
@@ -49,13 +57,13 @@ e. Obtaining your entitlement key
       ```
   
 f. Set the correct Storage type
-    Storage options 
+
+Storage options 
     Keycloak uses either the default storage class in Red Hat OpenShift Container Platform, or the storage class configured in the IBM Cloud Pak® foundational services Kubernetes resource. Before installing instances, do one of the following:
     * Set a default storage class by adding the storageclass.kubernetes.io/is-default-class:'true' annotation in Red Hat OpenShift Container Platform.
     * Specify a storage class name for spec.storageClass in the CommonService resource.
 
 <details closed>
-<summary>Click to open</summary>
 	
    - Identify current storage type
      Run command to identify the existing Storage type:
@@ -116,10 +124,15 @@ oc get sc
 
 <img width="1055" height="104" alt="image" src="https://github.com/user-attachments/assets/0c7c632f-a89d-420a-a06e-bc6413153f16" />
 </details>
+</details>
 
 ## Install Steps
 
-What will be deployed in which namespace?
+### Namespaces
+<details closed>
+We will be using the All Namespaces mode to install CP4I.
+Here is the namespace where each component will be deployed by the end of the installation process.
+
 | namespace      | what is deployed?       |
 | -------------- | -------------- |
 | openshift-marketplace| All Catalogsources|
@@ -127,11 +140,10 @@ What will be deployed in which namespace?
 | ibm-common-services| Common Services (KeyCloak/EDB)|
 | cp4i-mq| MQ instances|
 | cp4-ace| App Connect Instances|
-
+</details>
 
 ### Deploy IBM Foundational Services
 <details closed>
-<summary>Click to open</summary>
 
 Red Hat OpenShift Operators automate the creation, configuration, and management of instances of Kubernetes-native applications. Operators provide automation at every level of the stack—from managing the parts that make up the platform all the way to applications that are provided as a managed service.
 Red Hat OpenShift uses the power of Operators to run the entire platform in an autonomous fashion while exposing configuration natively through Kubernetes objects, allowing for quick installation and frequent, robust updates. In addition to the automation advantages of Operators for managing the platform, Red Hat OpenShift makes it easier to find, install, and manage Operators running on your clusters.
@@ -140,8 +152,8 @@ The foundational services help you manage and administer IBM software on your cl
 
 #### 1. Installing Cert Manager (Required if using APIC/Event Manager/Event Processing)
 
-_Important: The API Connect cluster, Event Manager, and Event Processing instances require you to install an appropriate certificate manager. Follow the instructions in Installing the cert-manager Operator for Red Hat OpenShift to fulfill this requirement.
-OPTIONAL: To install via Openshift Console UI, follow the instructions in Installing the cert-manager Operator for Red Hat OpenShift_
+_Important: The API Connect cluster, Event Manager, and Event Processing instances require you to install an appropriate certificate manager.
+OPTIONAL: To install via Openshift Console UI, follow the instructions in [Installing the cert-manager Operator for Red Hat OpenShift](https://docs.openshift.com/container-platform/4.14/security/cert_manager_operator/cert-manager-operator-install.html)_
 
 - Create a namespace
 
@@ -245,7 +257,6 @@ EOF
 
 ### Deploy Platform Navigator
 <details closed>
-<summary>Click to open</summary>
 Deploying the Platform UI allows you to deploy and manage instances from a central location.
 
 1. Install Platform UI Catalog Source
@@ -352,7 +363,6 @@ To be completed ….
 ### Deploy Enterprise Messaging - MQ
 
 <details closed>
-<summary>Click to open</summary>
 
 1.	Install MQ Catalog Source:
 
@@ -510,7 +520,6 @@ EOF
 
 ### Deploy App Connect
 <details closed>
-<summary>Click to open</summary>
 
 1.	Install App Connect Catalog Source:
     a. Apply the catalog source
@@ -725,7 +734,6 @@ CATALOG SOURCE YAML
 Reference: https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.0?topic=images-adding-catalog-sources-openshift-cluster#catalog-sources-for-operators__title__1
 
 <details closed>
-<summary>Click to open</summary>
 
 | Name of Service      | Command reference       |
 | -------------- | -------------- |
@@ -750,7 +758,6 @@ Here are the Subscription YAML files used for building the env, which is based u
 For a full list of subscriptions, see [Operators available to install.](https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.0?topic=operators-installing-by-using-cli#operators-available)
 
 <details closed>
-<summary>Click to open</summary>
 
 - IBM Cloud Pak for Integration - Platform UI, Assembly, API, API Product, Messaging server, Messaging channel, Messaging queue, Messaging user
 ``` yaml annotate
