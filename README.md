@@ -905,6 +905,3 @@ spec:
 
 </details>
 
-<!-- 
-<img width="468" height="624" alt="image" src="https://github.com/user-attachments/assets/f1c29f8e-273a-499c-ac06-4b360984e5b6" />
--->
