@@ -376,6 +376,7 @@ apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
   name: ibm-mq
+  namespace: openshift-operators
   labels:
     backup.mq.ibm.com/component: subscription        
 spec:
@@ -420,6 +421,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: mqsc-ini-example
+  namespace: cp4i-mq
 data:
   example1.mqsc: |
     DEFINE QLOCAL('DEV.QUEUE.1') REPLACE
@@ -521,6 +523,7 @@ apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
   name: ibm-appconnect
+  namespace: openshift-operators
   labels:
     backup.appconnect.ibm.com/component: subscription        
 spec:
@@ -556,6 +559,7 @@ metadata:
   labels:
     backup.appconnect.ibm.com/component: dashboard
   name: ace-dashboard
+  namespace: cp4i-ace
 spec:
   authentication:
     integrationKeycloak:
@@ -595,7 +599,7 @@ spec:
 EOF
 ```
 
-oc apply -f  ace-dashboard-instance.yaml -n cp4i-ace
+<!-- oc apply -f  ace-dashboard-instance.yaml -n cp4i-ace -->
 
 b.	Confirm the instance has been deployed successfully before moving to the next step running the following command:
 oc get dashboard ace-dashboard -n cp4i-ace -o jsonpath='{.status.phase}';echo
