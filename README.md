@@ -341,14 +341,23 @@ To be completed ….
 ### Deploy Enterprise Messaging - MQ
 1.	Install MQ Catalog Source:
 
-•	Deploy the Catalog source
-oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-mq/3.2.14/OLM/catalog-sources.yaml
-Confirm the catalog source has been deployed successfully before moving to the next step running the following command:
-oc get catalogsources ibmmq-operator-catalogsource -n openshift-marketplace -o jsonpath='{.status.connectionState.lastObservedState}';echo
-Wait Until You get a response like this:
-READY
+   a. Deploy the Catalog source
+
+	oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-mq/3.2.14/OLM/catalog-sources.yaml
+ 
+   b. Confirm the catalog source has been deployed successfully before moving to the next step running the following command:
+   
+	oc get catalogsources ibmmq-operator-catalogsource -n openshift-marketplace -o jsonpath='{.status.connectionState.lastObservedState}';echo
+ 
+   Wait Until You get a response like this:
+      READY
+	  
 2.	Install MQ Operator (2-5 mins):
-•	Create a Subscription for the MQ operator using the example file. Save the file as mq-subscription.yaml
+   
+   a. Create a Subscription for the MQ operator using the example file. Save the file as mq-subscription.yaml
+
+```yaml annotate
+cat <<EOF | oc apply -f -
 apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
@@ -360,18 +369,27 @@ spec:
   name: ibm-mq
   source: ibmmq-operator-catalogsource
   sourceNamespace: openshift-marketplace
+EOF
+```
 
-oc apply -f mq-subscription.yaml -n openshift-operators
+<!-- oc apply -f mq-subscription.yaml -n openshift-operators --> 
 
-•	Confirm the operator has been deployed successfully before moving to the next step running the following command:
-SUB_NAME=$(oc get deployment ibm-mq-operator -n openshift-operators --ignore-not-found -o jsonpath='{.metadata.labels.olm\.owner}');if [ ! -z "$SUB_NAME" ]; then oc get csv/$SUB_NAME --ignore-not-found -o jsonpath='{.status.phase}';fi;echo
-Wait Until You get a response like this:
-Succeeded
+  b. Confirm the operator has been deployed successfully before moving to the next step running the following command:
+  
+		SUB_NAME=$(oc get deployment ibm-mq-operator -n openshift-operators --ignore-not-found -o jsonpath='{.metadata.labels.olm\.owner}');if [ ! -z "$SUB_NAME" ]; then oc get csv/$SUB_NAME --ignore-not-found -o jsonpath='{.status.phase}';fi;echo
+
+  
+   c. Wait Until You get a response like this:
+      Succeeded
+
+   
 3.	Create MQ namespace and add pull secret to Namespace
-oc new-project cp4i-mq
-oc create secret docker-registry ibm-entitlement-key   --docker-username=cp    --docker-password=$ENT_KEY  --docker-server=cp.icr.io     --namespace=cp4i-mq
+   
+		oc new-project cp4i-mq
 
-4.	Deploy Queue Manager Instance
+		oc create secret docker-registry ibm-entitlement-key   --docker-username=cp    --docker-password=$ENT_KEY  --docker-server=cp.icr.io     --namespace=cp4i-mq
+
+5.	Deploy Queue Manager Instance
 
 Note: This is sample configuration for single Instance Queue Manager using MQSC and INI files. Additional configuration steps will be needed for more advanced MQ configuration and Security. 
 	Creating a self-signed PKI using OpenSSL
@@ -380,9 +398,10 @@ Note: This is sample configuration for single Instance Queue Manager using MQSC 
 	Configuring high availability for queue managers using the IBM MQ Operator
 	Configuring a Route to connect to a queue manager from outside a Red Hat OpenShift cluster
 
-o	Create mqsc-ini-example.yaml with the following:
+   a. Create mqsc-ini-example.yaml with the following:
 
-
+```yaml annotate
+cat <<EOF | oc apply -f -
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -398,10 +417,17 @@ data:
       Name=AuthorizationService
       EntryPoints=14
       SecurityPolicy=UserExternal
+EOF
+```
 
-•	Create qmgr-demo-config.yaml with the following:
-(This yaml can also be generated via the platform navigator UI) 
+  b. Create qmgr-demo-config.yaml with the following:
+  
+_(This yaml can also be generated via the platform navigator UI) 
 (Navigate to Platform UI  Click Create Instance  Pick Queue Manager  Click next  Pick QuickStart configuration  Click Next  Toggle Advance Setting toggle switch  Enter the details  Click YAML ) Either copy+paste the new YAML or continue deploying MQ instance via UI)
+_
+
+```yaml annotate
+cat <<EOF | oc apply -f -
 apiVersion: mq.ibm.com/v1beta1
 kind: QueueManager
 metadata:
@@ -439,19 +465,25 @@ spec:
       authorization:
         provider: integration-keycloak
     enabled: true
+EOF
+```
 
+<!-- oc apply -f mqsc-ini-example.yaml -n cp4i-mq --> 
+<!-- oc apply -f qmgr-demo-config.yaml -n cp4i-mq --> 
 
-oc apply -f mqsc-ini-example.yaml -n cp4i-mq
-oc apply -f qmgr-demo-config.yaml -n cp4i-mq
-
-•	Confirm the instance has been deployed successfully before moving to the next step running the following command:
-oc get queuemanager qmgr-demo -n cp4i-mq -o jsonpath='{.status.phase}';echo
-Wait Until You get a response like this:
-Running
+  c. Confirm the instance has been deployed successfully before moving to the next step running the following command:
+  
+		oc get queuemanager qmgr-demo -n cp4i-mq -o jsonpath='{.status.phase}';echo
+  
+  d. Wait Until You get a response like this:
+      Running
+	  
 •	Execute the following command to verify that QMGR is running
-oc exec qmgr-demo-ibm-mq-0 -n cp4i-mq -- dspmq
+
+		oc exec qmgr-demo-ibm-mq-0 -n cp4i-mq -- dspmq
 
 5.	In the platform Navigator, you will now see any instance of Queue Manager running. Click on the link to navigate to QM console.
+
  
 
 ### Deploy App Connect
@@ -466,6 +498,9 @@ READY
 2.	Install App Connect Operator: (Time Install ~2 mins)
 
 a.	Create app-connect-subscription.yaml
+
+```yaml annotate
+cat <<EOF | oc apply -f -
 apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
@@ -477,6 +512,8 @@ spec:
   name: ibm-appconnect
   source: appconnect-operator-catalogsource
   sourceNamespace: openshift-marketplace
+EOF
+```
 
 oc apply -f app-connect-subscription.yaml -n openshift-operators
 b.	Confirm the operator has been deployed successfully before moving to the next step running the following command:
@@ -494,6 +531,9 @@ a.	Create ace-dashboard-instance.yaml file
 For OCP_TYPE=ODF; set OCP_FILE_STORAGE='ocs-storagecluster-cephfs'
 (This yaml can also be generated via the platform navigator UI)
 (Navigate to Platform UI  Click Create Instance  Pick Integration Dashboard  Click next  Pick QuickStart configuration  Click Next  Toggle Advance Setting toggle switch  Enter the details  Click YAML ) Either copy+paste the new YAML or continue deploying MQ instance via UI)
+
+```yaml annotate
+cat <<EOF | oc apply -f -
 apiVersion: appconnect.ibm.com/v1beta1
 kind: Dashboard
 metadata:
@@ -536,6 +576,8 @@ spec:
   version: '12.0'
   api:
     enabled: true
+EOF
+```
 
 oc apply -f  ace-dashboard-instance.yaml -n cp4i-ace
 
@@ -552,6 +594,8 @@ a.	Create ace-designer-local-ai-instance.yaml file
 (This yaml can also be generated via the platform navigator UI)
 (Navigate to Platform UI  Click Create Instance  Pick Integration Design  Click next  Pick QuickStart with AI Enabled configuration  Click Next  Toggle Advance Setting toggle switch  Enter the details  Click YAML ) Either copy+paste the new YAML or continue deploying MQ instance via UI)
 
+```yaml annotate
+cat <<EOF | oc apply -f -
 apiVersion: appconnect.ibm.com/v1beta1
 kind: DesignerAuthoring
 metadata:
@@ -587,6 +631,8 @@ spec:
     use: CloudPakForIntegrationNonProduction
   replicas: 1
   version: '12.0'
+EOF
+```
 
 	oc apply -f ace-designer-local-ai-instance.yaml -n cp4i-ace
 
