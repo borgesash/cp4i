@@ -377,8 +377,6 @@ kind: Subscription
 metadata:
   name: ibm-mq
   namespace: openshift-operators
-  labels:
-    backup.mq.ibm.com/component: subscription        
 spec:
   channel: v3.2-sc2
   name: ibm-mq
