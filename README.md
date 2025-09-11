@@ -60,14 +60,11 @@ f. Set the correct Storage type
      oc get sc
      ```
 
-  Your will get a response like this (then proceed with the steps below):
-    NAME                                                                PROVISIONER                                                 RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
-    localblock                                                        kubernetes.io/no-provisioner                     Delete                       WaitForFirstConsumer         false                                                18h
-    ocs-storagecluster-ceph-rbd                    openshift-storage.rbd.csi.ceph.com        Delete                       Immediate                               true                                                  18h
-    ocs-storagecluster-ceph-rgw                   openshift-storage.ceph.rook.io/bucket   Delete                       Immediate                               false                                                 18h
-    ocs-storagecluster-cephfs (default)       openshift-storage.cephfs.csi.ceph.com   Delete                      Immediate                               true                                                   18h
-    openshift-storage.noobaa.io                    openshift-storage.noobaa.io/obc               Delete                      Immediate                               false                                                  18h
+  Your will get a response like this showing 'ocs-storagecluster-cephfs (default)' (then proceed with the steps below):
 
+  <img width="1028" height="88" alt="image" src="https://github.com/user-attachments/assets/db44e44f-714f-4162-9dba-fa9ae7bedde0" />
+
+  
 
 For this demo environment, we are using ODF, so default storage will be ocs-storagecluster-ceph-rbd. 
 
@@ -76,27 +73,37 @@ For this demo environment, we are using ODF, so default storage will be ocs-stor
   Create sc-remove-default.yaml with following content
 
 ```yaml annotate
+cat <<EOF > sc-remove-default.yaml
 metadata:
   annotations:
     storageclass.kubernetes.io/is-default-class: "false"
+EOF
 ```
+
   Execute the follwing command
   ```
   oc get sc | grep default | awk '{system("oc patch storageclass " $1 " --patch-file sc-remove-default.yaml")}'
   ```
+  Successful response would look like
+  storageclass.storage.k8s.io/ocs-storagecluster-cephfs patched
 
 - Add the correct default storage class
 
   create sc-set-default.yaml with the following content
 ```yaml annotate
+cat <<EOF > sc-set-default.yaml
 metadata:
   annotations:
     storageclass.kubernetes.io/is-default-class: "true"
+EOF
 ```
+
   Execute the following command
   ```
   oc patch storageclass ocs-storagecluster-ceph-rbd --patch-file sc-set-default.yaml
   ```
+  Successfull response would look like:
+  storageclass.storage.k8s.io/ocs-storagecluster-ceph-rbd patched
 
 - Validate the default storage class
 	Run the following command to verify that the default storage class is correct set to your desired option. In this case it should be ocs-storagecluster-ceph-rbd
