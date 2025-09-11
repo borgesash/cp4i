@@ -85,7 +85,7 @@ EOF
   oc get sc | grep default | awk '{system("oc patch storageclass " $1 " --patch-file sc-remove-default.yaml")}'
   ```
   Successful response would look like
-  storageclass.storage.k8s.io/ocs-storagecluster-cephfs patched
+  `storageclass.storage.k8s.io/ocs-storagecluster-cephfs patched`
 
 - Add the correct default storage class
 
@@ -103,7 +103,7 @@ EOF
   oc patch storageclass ocs-storagecluster-ceph-rbd --patch-file sc-set-default.yaml
   ```
   Successfull response would look like:
-  storageclass.storage.k8s.io/ocs-storagecluster-ceph-rbd patched
+  `storageclass.storage.k8s.io/ocs-storagecluster-ceph-rbd patched`
 
 - Validate the default storage class
 	Run the following command to verify that the default storage class is correct set to your desired option. In this case it should be ocs-storagecluster-ceph-rbd
@@ -135,8 +135,8 @@ The foundational services help you manage and administer IBM software on your cl
 
 #### 1. Installing Cert Manager (Required if using APIC/Event Manager/Event Processing)
 
-Important: The API Connect cluster, Event Manager, and Event Processing instances require you to install an appropriate certificate manager. Follow the instructions in Installing the cert-manager Operator for Red Hat OpenShift to fulfill this requirement.
-OPTIONAL: To install via Openshift Console UI, follow the instructions in Installing the cert-manager Operator for Red Hat OpenShift
+_Important: The API Connect cluster, Event Manager, and Event Processing instances require you to install an appropriate certificate manager. Follow the instructions in Installing the cert-manager Operator for Red Hat OpenShift to fulfill this requirement.
+OPTIONAL: To install via Openshift Console UI, follow the instructions in Installing the cert-manager Operator for Red Hat OpenShift_
 
 - Create a namespace
 
@@ -146,45 +146,45 @@ oc new-project cert-manager-operator
 
 - Create the Operator
 
-	```yaml annotate
-	cat <<EOF | oc apply -f -
-	apiVersion: operators.coreos.com/v1
-	kind: OperatorGroup
-	metadata:
-	  name: cert-manager-operator
-	  namespace: cert-manager-operator 
-	spec:
-	  targetNamespaces:
-	  - cert-manager-operator
-	EOF
-	```
+```yaml annotate
+cat <<EOF | oc apply -f -
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: cert-manager-operator
+  namespace: cert-manager-operator 
+spec:
+  targetNamespaces:
+  - cert-manager-operator
+EOF
+```
 		
 - Create the subscription
 
-	```yaml annotate
-	cat <<EOF | oc apply -f -
-	apiVersion: operators.coreos.com/v1alpha1
-	kind: Subscription
-	metadata:
-	  name: openshift-cert-manager-operator
-	  namespace: cert-manager-operator 
-	spec:
-	  channel: "stable-v1" 
-	  name: openshift-cert-manager-operator
-	  source: redhat-operators 
-	  sourceNamespace: openshift-marketplace
-	EOF
-	```
-		
-		<!-- oc apply -f cert-manager-operatorgroup.yaml -->
-		<!-- oc apply -f cert-manager-subscription.yaml -->
+```yaml annotate
+cat <<EOF | oc apply -f -
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: openshift-cert-manager-operator
+  namespace: cert-manager-operator 
+spec:
+  channel: "stable-v1" 
+  name: openshift-cert-manager-operator
+  source: redhat-operators 
+  sourceNamespace: openshift-marketplace
+EOF
+```
+	
+<!-- oc apply -f cert-manager-operatorgroup.yaml -->
+<!-- oc apply -f cert-manager-subscription.yaml -->
 
 - Confirm the subscription has been completed successfully before moving to the next step running the following command:
 		
   		SUB_NAME=$(oc get deployment cert-manager-operator-controller-manager -n cert-manager-operator --ignore-not-found -o jsonpath='{.metadata.labels.olm\.owner}');if [ ! -z "$SUB_NAME" ]; then oc get csv/$SUB_NAME -n cert-manager-operator --ignore-not-found -o jsonpath='{.status.phase}';fi;echo
 	
   Wait Until You get a response like this:
-		Succeeded
+		`Succeeded`
 
 #### 2. Install Common Services Catalog Source
 
@@ -192,22 +192,22 @@ oc new-project cert-manager-operator
 
 	oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-cp-common-services/4.6.17/OLM/catalog-sources.yaml
 
-   Note: Reference for correct catalog sources for CP4I v16.1.0: Catalog sources for operators
+   Note: Reference for correct catalog sources for CP4I v16.1.0: [Catalog sources for operators](https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.0?topic=images-adding-catalog-sources-openshift-cluster#catalog-sources-for-operators)
 
   - Confirm the catalog source has been deployed successfully before moving to the next step running the following command:
 
 		oc get catalogsources opencloud-operators -n openshift-marketplace -o jsonpath='{.status.connectionState.lastObservedState}';echo
 
     Wait Until You get a response like this:
-		READY
+		`READY`
 
 #### 3. Create common-services namespace:
 
-		oc create namespace ibm-common-services
+	oc create namespace ibm-common-services
 
 #### 4. Install  common-services Operator:
 
-  Optional: Installing the operators by using the Red Hat OpenShift console
+  _Optional: Installing the operators by using the Red Hat OpenShift console_
 
   - Create a Subscription for the IBM Cloud Pak foundational services operator using the example file. Save the file as common-service-subscription.yaml
 
@@ -233,8 +233,8 @@ EOF
 		
   	SUB_NAME=$(oc get deployment/ibm-common-service-operator -n openshift-operators --ignore-not-found -o jsonpath='{.metadata.labels.olm\.owner}');if [ ! -z "$SUB_NAME" ]; then oc get csv/$SUB_NAME --ignore-not-found -o jsonpath='{.status.phase}';fi;echo
    
-   Wait Until You get a response like this:
-		 Succeeded
+   Wait Until You get a response like this: 
+   `Succeeded`
 
 
 
@@ -242,17 +242,17 @@ EOF
 
 Deploying the Platform UI allows you to deploy and manage instances from a central location.
 
-1.	Install Platform UI Catalog Source
-Note: Reference for correct catalog sources for CP4I v16.1.0: Catalog sources for operators
+1. Install Platform UI Catalog Source
+   _Note: Reference for correct catalog sources for CP4I v16.1.0: Catalog sources for operators_
 
 		oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-integration-platform-navigator/7.3.16/OLM/catalog-sources.yaml
 
-Confirm the catalog source has been deployed successfully before moving to the next step running the following command:
+   Confirm the catalog source has been deployed successfully before moving to the next step running the following command:
 
 		oc get catalogsources ibm-integration-platform-navigator-catalog -n openshift-marketplace -o jsonpath='{.status.connectionState.lastObservedState}';echo
   
-Wait Until You get a response like this:
-		READY
+   Wait Until You get a response like this:
+		`READY`
 
 2.	Install Operator:
    
@@ -260,7 +260,6 @@ a.	Create a Subscription for the IBM Cloud Pak foundational services operator
 
 ```yaml annotate
 cat <<EOF | oc apply -f -
-#reference source: https://github.ibm.com/joel-gomez/cp4i-demo/blob/main/subscriptions/16.1.0/01-platform-navigator-subscription.yaml
 apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
@@ -281,7 +280,7 @@ b.	Confirm the operator has been deployed successfully before moving to the next
 	SUB_NAME=$(oc get deployment ibm-integration-platform-navigator-operator -n openshift-operators --ignore-not-found -o jsonpath='{.metadata.labels.olm\.owner}');if [ ! -z "$SUB_NAME" ]; then oc get csv/$SUB_NAME --ignore-not-found -o jsonpath='{.status.phase}';fi;echo
  
    Wait Until You get a response like this(after few minutes):
-	  Succeeded
+	  `Succeeded`
 	_Note: You may be seeing a response of PENDING which indicates the deployment is underway butnot yet complete. Wait until the READY response is received before continuing._
   
 3.	Deploy the Platform UI instance
@@ -321,24 +320,23 @@ c.	Check the status of the Platform UI instance by running the following command
 	oc get platformnavigator cp4i-navigator -n tools -o jsonpath='{.status.conditions[0].type}';echo
 
    Wait Until You get a response like this: (Note: This can take upto 15mins)
-       Ready
+       `Ready`
 
 d.	Once the Platform UI instance is up and running get the access info:
 
 Execute the following commands to retrieve the CP4I_URL, USER and Password:
 
-	oc get platformnavigator cp4i-navigator -n tools -o jsonpath='{.status.endpoints[?(@.name=="navigator")].uri}'
- 
-	oc get secret integration-admin-initial-temporary-credentials -n ibm-common-services -o jsonpath={.data.username} | base64 -d
- 
-	oc get secret integration-admin-initial-temporary-credentials -n ibm-common-services -o jsonpath={.data.password} | base64 -d
- 
-   _Note the password is temporary and you will be required to change it the first time you log into Platform UI._
+	echo "CP4I Platform UI URL: $(oc get platformnavigator cp4i-navigator -n tools -o jsonpath='{.status.endpoints[?(@.name=="navigator")].uri}')";
+	echo "CP4I admin user: $(oc get secret integration-admin-initial-temporary-credentials -n ibm-common-services -o jsonpath={.data.username} | base64 -d)";
+	echo "CP4I admin password: $(oc get secret integration-admin-initial-temporary-credentials -n ibm-common-services -o jsonpath={.data.password} | base64 -d)"
 
-4.	Login to CP4I
+ _Note the password is temporary and you will be required to change it the first time you log into Platform UI._
+
+4. Login to CP4I
    
-	Use the browser to login to the CP4I url and upon successfully reset of password, you should see the following screen
+Use the browser to login to the CP4I url and upon successfully reset of password, you should see the following screen
  
+<img width="1917" height="636" alt="image" src="https://github.com/user-attachments/assets/d33a090f-5dac-41f8-94b1-413dfc3e712f" />
 
 
 ### Deploy Asset Repo (optional)
@@ -396,7 +394,7 @@ EOF
 
 		oc create secret docker-registry ibm-entitlement-key   --docker-username=cp    --docker-password=$ENT_KEY  --docker-server=cp.icr.io     --namespace=cp4i-mq
 
-5.	Deploy Queue Manager Instance
+4.	Deploy Queue Manager Instance
 
 Note: This is sample configuration for single Instance Queue Manager using MQSC and INI files. Additional configuration steps will be needed for more advanced MQ configuration and Security. 
 	Creating a self-signed PKI using OpenSSL
