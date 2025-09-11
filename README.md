@@ -511,18 +511,20 @@ EOF
 <summary>Click to open</summary>
 
 1.	Install App Connect Catalog Source:
-a.	Apply the catalog source 
+    a. Apply the catalog source
+	
+ 		oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-appconnect/12.0.15/OLM/catalog-sources.yaml
 
-b.	Confirm the catalog source has been deployed successfully before moving to the next step running the following command:
+    b. Confirm the catalog source has been deployed successfully before moving to the next step running the following command:
 
-	oc get catalogsources appconnect-operator-catalogsource -n openshift-marketplace -o jsonpath='{.status.connectionState.lastObservedState}';echo
+		oc get catalogsources appconnect-operator-catalogsource -n openshift-marketplace -o jsonpath='{.status.connectionState.lastObservedState}';echo
  
-Wait Until You get a response like this:
-`READY`
+   c. Wait Until You get a response like this:
+		`READY`
 
 2.	Install App Connect Operator: (Time Install ~2 mins)
 
-a.	Create app-connect-subscription.yaml
+   a. Create app-connect-subscription.yaml
 
 ```yaml annotate
 cat <<EOF | oc apply -f -
@@ -530,9 +532,7 @@ apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
   name: ibm-appconnect
-  namespace: openshift-operators
-  labels:
-    backup.appconnect.ibm.com/component: subscription        
+  namespace: openshift-operators     
 spec:
   channel: v12.0-sc2
   name: ibm-appconnect
@@ -541,14 +541,14 @@ spec:
 EOF
 ```
 
-oc apply -f app-connect-subscription.yaml -n openshift-operators
+<!-- oc apply -f app-connect-subscription.yaml -n openshift-operators -->
 
-b.	Confirm the operator has been deployed successfully before moving to the next step running the following command:
+ b.	Confirm the operator has been deployed successfully before moving to the next step running the following command:
 
 	SUB_NAME=$(oc get deployment ibm-appconnect-operator -n openshift-operators --ignore-not-found -o jsonpath='{.metadata.labels.olm\.owner}');if [ ! -z "$SUB_NAME" ]; then oc get csv/$SUB_NAME --ignore-not-found -o jsonpath='{.status.phase}';fi;echo
 
-Wait Until You get a response like this:
-`Succeeded`
+ c. Wait Until You get a response like this:
+	`Succeeded`
 
 3.	Create new namespace and add entitlement key as secret
 
@@ -558,12 +558,13 @@ Wait Until You get a response like this:
 
 4.	Deploy Dashboard instance:
    
-a.	Create ace-dashboard-instance.yaml file
+    a. Create ace-dashboard-instance 
 
-For OCP_TYPE=ODF; set OCP_FILE_STORAGE=`ocs-storagecluster-cephfs`
+	   Set the correct storage file; In this case; 
+  	   For OCP_TYPE=ODF; we are setting OCP_FILE_STORAGE=`ocs-storagecluster-cephfs` as seen in the YAML below.
 
-_(This yaml can also be generated via the platform navigator UI)
-(Navigate to Platform UI  Click Create Instance  Pick Integration Dashboard  Click next  Pick QuickStart configuration  Click Next  Toggle Advance Setting toggle switch  Enter the details  Click YAML ) Either copy+paste the new YAML or continue deploying MQ instance via UI)_
+       _(This yaml can also be generated via the platform navigator UI)
+       (Navigate to Platform UI  Click Create Instance  Pick Integration Dashboard  Click next  Pick QuickStart configuration  Click Next  Toggle Advance Setting toggle switch  Enter the details  Click YAML ) Either copy+paste the new YAML or continue deploying MQ instance via UI)_
 
 ```yaml annotate
 cat <<EOF | oc apply -f -
@@ -615,21 +616,23 @@ EOF
 
 <!-- oc apply -f  ace-dashboard-instance.yaml -n cp4i-ace -->
 
-b.	Confirm the instance has been deployed successfully before moving to the next step running the following command:
+  b. Confirm the instance has been deployed successfully before moving to the next step running the following command:
 
-	oc get dashboard ace-dashboard -n cp4i-ace -o jsonpath='{.status.phase}';echo
+		oc get dashboard ace-dashboard -n cp4i-ace -o jsonpath='{.status.phase}';echo
  
-  Wait Until You get a response like this:
-  `Ready`
+  c. Wait for few minutes Until You get a response like this:
+  	`Ready`
   
-c.	You should Now see the ace-dashboard instance in the Platform Navigator UI
-		 
+  d. You should now see the ace-dashboard instance in the Platform Navigator UI
+
+
 
 5.	Deploy Designer Authoring instance 
-a.	Create ace-designer-local-ai-instance.yaml file 
 
-(This yaml can also be generated via the platform navigator UI)
-(Navigate to Platform UI  Click Create Instance  Pick Integration Design  Click next  Pick QuickStart with AI Enabled configuration  Click Next  Toggle Advance Setting toggle switch  Enter the details  Click YAML ) Either copy+paste the new YAML or continue deploying MQ instance via UI)
+    a. Create ACE designer instance
+
+    _(This yaml can also be generated via the platform navigator UI)_
+    _(Navigate to Platform UI  Click Create Instance  Pick Integration Design  Click next  Pick QuickStart with AI Enabled configuration  Click Next  Toggle Advance Setting toggle switch  Enter the details  Click YAML ) Either copy+paste the new YAML or continue deploying MQ instance via UI)_
 
 ```yaml annotate
 cat <<EOF | oc apply -f -
@@ -673,11 +676,16 @@ EOF
 
 	oc apply -f ace-designer-local-ai-instance.yaml -n cp4i-ace
 
-b.	Confirm the instance has been deployed successfully before moving to the next step running the following command:
-oc get designerauthoring ace-designer-ai -n cp4i-ace -o jsonpath='{.status.phase}';echo
-Wait Until You get a response like this:
-Ready
-c.	Once deployed, you should see the ace-designer instance in the platform navigator ui
+   b. Confirm the instance has been deployed successfully before moving to the next step running the following command:
+
+   	oc get designerauthoring ace-designer-ai -n cp4i-ace -o jsonpath='{.status.phase}';echo
+
+   c. Wait Until You get a response like this:
+	`Ready`
+ 
+   d. Once deployed, you should see the ace-designer instance in the platform navigator ui
+
+<img width="1917" height="806" alt="image" src="https://github.com/user-attachments/assets/e3352cba-1cca-4987-a3ff-d51a8c3722c5" />
 
 
 
