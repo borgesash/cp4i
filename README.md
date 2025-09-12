@@ -304,7 +304,7 @@ b.	Confirm the operator has been deployed successfully before moving to the next
    
 a.	Create Platform UI namespace and add pull secret to Namespace
 
-	oc new-project tools
+	oc new-project cp4i
 
 	oc create secret docker-registry ibm-entitlement-key   --docker-username=cp    --docker-password=$ENT_KEY  --docker-server=cp.icr.io     --namespace=tools
  
@@ -319,7 +319,7 @@ apiVersion: integration.ibm.com/v1beta1
 kind: PlatformNavigator
 metadata:
   name: cp4i-navigator
-  namespace: tools
+  namespace: cp4i
 spec:
   integrationAssistant:
     enabled: true
@@ -330,11 +330,10 @@ spec:
   version: 16.1.0
 EOF
 ```
-  <!-- oc apply -f platform-ui-instance.yaml  -n tools -->
 
 c.	Check the status of the Platform UI instance by running the following command in the project (namespace) where it was deployed:
 
-	oc get platformnavigator cp4i-navigator -n tools -o jsonpath='{.status.conditions[0].type}';echo
+	oc get platformnavigator cp4i-navigator -n cp4i -o jsonpath='{.status.conditions[0].type}';echo
 
    Wait Until You get a response like this: (Note: This can take upto 15mins)
        `Ready`
@@ -343,7 +342,7 @@ d.	Once the Platform UI instance is up and running get the access info:
 
 Execute the following commands to retrieve the CP4I_URL, USER and Password:
 
-	echo "CP4I Platform UI URL: $(oc get platformnavigator cp4i-navigator -n tools -o jsonpath='{.status.endpoints[?(@.name=="navigator")].uri}')";
+	echo "CP4I Platform UI URL: $(oc get platformnavigator cp4i-navigator -n cp4i -o jsonpath='{.status.endpoints[?(@.name=="navigator")].uri}')";
 	echo "CP4I admin user: $(oc get secret integration-admin-initial-temporary-credentials -n ibm-common-services -o jsonpath={.data.username} | base64 -d)";
 	echo "CP4I admin password: $(oc get secret integration-admin-initial-temporary-credentials -n ibm-common-services -o jsonpath={.data.password} | base64 -d)"
 
@@ -358,7 +357,121 @@ Use the browser to login to the CP4I url and upon successfully reset of password
 
 ### Deploy Asset Repo (optional)
 
-To be completed …. 
+<details closed>
+
+1. Install Asset Repo Catalog Source
+   _Note: Reference for correct catalog sources for CP4I v16.1.0: Catalog sources for operators_
+
+		oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-integration-asset-repository/1.7.13/OLM/catalog-sources-linux-amd64.yaml
+
+   Confirm the catalog source has been deployed successfully before moving to the next step running the following command:
+
+		oc get catalogsources ibm-integration-asset-repository-catalog -n openshift-marketplace -o jsonpath='{.status.connectionState.lastObservedState}';echo
+  
+   Wait Until You get a response like this:
+		`READY`
+
+2.	Install Operator:
+   
+a.	Create a Subscription for the Asset Repo operator
+  
+```yaml annotate
+cat <<EOF | oc apply -f -
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: ibm-integration-asset-repository
+  namespace: openshift-operators
+spec:
+  channel: v1.7-sc2
+  name: ibm-integration-asset-repository
+  source: ibm-integration-asset-repository-catalog
+  sourceNamespace: openshift-marketplace
+EOF
+```
+
+b.	Confirm the operator has been deployed successfully before moving to the next step running the following command:
+
+	SUB_NAME=$(oc get deployment ibm-integration-asset-repository-operator -n openshift-operators --ignore-not-found -o jsonpath='{.metadata.labels.olm\.owner}');if [ ! -z "$SUB_NAME" ]; then oc get csv/$SUB_NAME --ignore-not-found -o jsonpath='{.status.phase}';fi;echo
+ 
+   Wait Until You get a response like this(after few minutes):
+	  `Succeeded`
+   
+	_Note: You may be seeing a response of PENDING which indicates the deployment is underway butnot yet complete. Wait until the READY response is received before continuing._
+
+3.	Deploy the Asset Repo instance
+   
+a.	Create Asset Repo namespace and add pull secret to Namespace
+
+	oc new-project cp4i
+
+	oc create secret docker-registry ibm-entitlement-key   --docker-username=cp    --docker-password=$ENT_KEY  --docker-server=cp.icr.io     --namespace=cp4i
+ 
+   __Note: The IBM Entitled Registry contains software images for the instances in IBM Cloud Pak® for Integration. To allow the operators to automatically pull those software images, you must first obtain your entitlement key, then add your entitlement key in a pull secret. Your entitlement key must be added to the OpenShift cluster as a pull secret to deploy instances. Adding a global pull secret enables deployment of instances in all namespaces. The alternative is to add a pull secret to each namespace in which you plan to deploy instances (any namespace with operators), plus the 'openshift-operators' namespace. However, this option adds work to your installation process._
+
+
+b.	Create a Asset Repo instance with the following configuration. 
+    Set the correct storage file; In this case; 
+  	For OCP_TYPE=ODF; we are setting OCP_FILE_STORAGE=`ocs-storagecluster-ceph-rbd` as seen in the YAML below.
+
+```yaml annotate
+cat <<EOF | oc apply -f -
+apiVersion: integration.ibm.com/v1beta1
+kind: AssetRepository
+metadata:
+  labels:
+    backup.integration.ibm.com/component: assetrepository
+  name: asset-repo-ai
+  namespace: cp4i
+spec:
+  designerAIFeatures:
+    enabled: true
+  license:
+    accept: true
+    license: L-JTPV-KYG8TF
+  replicas: 1
+  singleReplicaOnly: true
+  storage:
+    assetDataVolume:
+      class: ocs-storagecluster-ceph-rbd
+    couchVolume:
+      class: ocs-storagecluster-ceph-rbd
+  version: 4.0-sc2
+EOF
+```
+  <!-- oc apply -f platform-ui-instance.yaml  -n tools -->
+
+c.	Check the status of the Asset Repo instance by running the following command in the project (namespace) where it was deployed:
+
+	echo -n -e "\033[1;33m";oc get assetrepository asset-repo-ai -n cp4i -o jsonpath='{.status.phase}';echo -e "\033[0m"
+
+   Wait Until You get a response like this: (Note: This can take upto 15mins)
+       `Ready`
+
+4. Post-deployment configuration (optional):
+   
+   a. Navigate to the Asset Repo instance from Platform UI clicking on the instance name as shown below:
+
+   <img width="1843" height="586" alt="image" src="https://github.com/user-attachments/assets/3be099e9-d797-499e-9a7f-045d0345a1de" />
+
+   b. From the main page select the Remotes tab and click Add Remote as shown below:
+   <img width="1843" height="586" alt="image" src="https://github.com/user-attachments/assets/fb8f1218-4565-4e5d-a636-5491c6b4a3f8" />
+
+   c. In the next page scroll all the way down and select Select All as shown below:
+   <img width="1679" height="838" alt="image" src="https://github.com/user-attachments/assets/473d7e65-d2eb-40fd-a87e-17bd8f24fb00" />
+
+   _Note at the moment not all the asset types are available in the repo but we are ready for future enhancements._
+   
+   d. Now scroll up again and enter the name of the remote repo, for instance `Joel CP4I Demo Assets` and then enter the Git URL "https://github.com/gomezrjo/cp4idemo" and then click "Create Remote" as shown below:
+   <img width="1831" height="838" alt="image" src="https://github.com/user-attachments/assets/50c55ed5-e6b3-4a79-8c2b-3d2711bd0e55" />
+
+   e. Final screen after adding new repo with assets
+   <img width="1831" height="838" alt="image" src="https://github.com/user-attachments/assets/0f02836f-e235-4579-b078-a56e231b18c0" />
+
+   You can add your own repo following the same process.
+
+   
+</details>
 
 ### Deploy Enterprise Messaging - MQ
 
