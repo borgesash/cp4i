@@ -688,7 +688,7 @@ EOF
   	   For OCP_TYPE=ODF; we are setting OCP_FILE_STORAGE=`ocs-storagecluster-cephfs` as seen in the YAML below.
 
        _(This yaml can also be generated via the platform navigator UI)
-       (Navigate to Platform UI  Click Create Instance  Pick Integration Dashboard  Click next  Pick QuickStart configuration  Click Next  Toggle Advance Setting toggle switch  Enter the details  Click YAML ) Either copy+paste the new YAML or continue deploying MQ instance via UI)_
+       (Navigate to Platform UI  Click Create Instance  Pick Integration Dashboard  Click next  Pick QuickStart configuration  Click Next  Toggle Advance Setting toggle switch  Enter the details  Click YAML ) Either copy+paste the new YAML or continue deploying instance via UI)_
 
 ```yaml annotate
 cat <<EOF | oc apply -f -
@@ -762,7 +762,7 @@ EOF
     a. Create ACE designer instance
 
     _(This yaml can also be generated via the platform navigator UI)_
-    _(Navigate to Platform UI  Click Create Instance  Pick Integration Design  Click next  Pick QuickStart with AI Enabled configuration  Click Next  Toggle Advance Setting toggle switch  Enter the details  Click YAML ) Either copy+paste the new YAML or continue deploying MQ instance via UI)_
+    _(Navigate to Platform UI  Click Create Instance  Pick Integration Design  Click next  Pick QuickStart with AI Enabled configuration  Click Next  Toggle Advance Setting toggle switch  Enter the details  Click YAML ) Either copy+paste the new YAML or continue deploying instance via UI)_
 
 ```yaml annotate
 cat <<EOF | oc apply -f -
@@ -822,10 +822,55 @@ Click on the ace-designer-ai instance to launch the ACE Designer
 <img width="1917" height="806" alt="image" src="https://github.com/user-attachments/assets/e1586967-d0fe-4a99-99b3-757a1c06f9dc" />
 
 
+6.	Deploy Integration runtime instance 
 
+    a. Create Integration runtime instance
 
-6.	Additional components as needed
-•	Deploy Integration runtime instances
+    _(This yaml can also be generated via the platform navigator UI)_
+    _(Navigate to Platform UI  Click Create Instance  Pick Integration Runtime  Click next  Pick QuickStart integration   Click Next  Toggle Advance Setting toggle switch  Enter the details  Click YAML ) Either copy+paste the new YAML or continue deploying instance via UI)_
+
+```yaml annotate
+cat <<EOF | oc apply -f -
+apiVersion: appconnect.ibm.com/v1beta1
+kind: IntegrationRuntime
+metadata:
+  labels:
+    backup.appconnect.ibm.com/component: integrationruntime
+  name: ace-runtime
+  namespace: cp4i-ace
+spec:
+  license:
+    accept: true
+    license: L-XRNH-47FJAW
+    use: CloudPakForIntegrationNonProductionFREE
+  replicas: 1
+  template:
+    spec:
+      containers:
+        - name: runtime
+          resources:
+            requests:
+              cpu: 300m
+              memory: 368Mi
+  version: '12.0'
+EOF
+```
+
+   b. Confirm the instance has been deployed successfully before moving to the next step running the following command:
+
+   	oc get integrationruntimes -n cp4i-ace -o=custom-columns='NAME:.metadata.name,STATUS:.status.phase' --sort-by=.metadata.name
+
+   c. Wait Until You get a response like this:
+	`Ready`
+ 
+   d. Once deployed, you should see the ace-runtime instance in the platform navigator ui
+
+   <img width="1783" height="747" alt="image" src="https://github.com/user-attachments/assets/a68a6b09-9169-45a2-bbbb-0a59250d2acd" />
+
+   e. Click on the ace-runtime instance to launch the Integration runtime UI
+
+   <img width="1783" height="747" alt="image" src="https://github.com/user-attachments/assets/c9aee348-019c-4e78-8c78-f5a52821802d" />
+
 
 </details>
 
