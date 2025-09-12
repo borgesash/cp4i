@@ -130,16 +130,17 @@ oc get sc
 
 ### Namespaces
 <details closed>
-We will be using the All Namespaces mode to install CP4I.
+We will be using the (Default)All Namespaces mode to install CP4I.
 Here is the namespace where each component will be deployed by the end of the installation process.
 
 | namespace      | what is deployed?       |
 | -------------- | -------------- |
-| openshift-marketplace| All Catalogsources|
-| openshift-operators| All Operators|
-| ibm-common-services| Common Services (KeyCloak/EDB)|
-| cp4i-mq| MQ instances|
-| cp4-ace| App Connect Instances|
+| openshift-marketplace| All Catalogsources |
+| openshift-operators| All Operators |
+| ibm-common-services| Common Services (KeyCloak/EDB) |
+| cp4i| Platform UI Instance |
+| cp4i-mq| MQ instances |
+| cp4-ace| App Connect Instances |
 </details>
 
 ### Deploy IBM Foundational Services
@@ -306,7 +307,7 @@ a.	Create Platform UI namespace and add pull secret to Namespace
 
 	oc new-project cp4i
 
-	oc create secret docker-registry ibm-entitlement-key   --docker-username=cp    --docker-password=$ENT_KEY  --docker-server=cp.icr.io     --namespace=tools
+	oc create secret docker-registry ibm-entitlement-key   --docker-username=cp    --docker-password=$ENT_KEY  --docker-server=cp.icr.io     --namespace=cp4i
  
    __Note: The IBM Entitled Registry contains software images for the instances in IBM Cloud Pak® for Integration. To allow the operators to automatically pull those software images, you must first obtain your entitlement key, then add your entitlement key in a pull secret. Your entitlement key must be added to the OpenShift cluster as a pull secret to deploy instances. Adding a global pull secret enables deployment of instances in all namespaces. The alternative is to add a pull secret to each namespace in which you plan to deploy instances (any namespace with operators), plus the 'openshift-operators' namespace. However, this option adds work to your installation process._
 
@@ -439,7 +440,6 @@ spec:
   version: 4.0-sc2
 EOF
 ```
-  <!-- oc apply -f platform-ui-instance.yaml  -n tools -->
 
 c.	Check the status of the Asset Repo instance by running the following command in the project (namespace) where it was deployed:
 
