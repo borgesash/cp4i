@@ -966,29 +966,92 @@ EOF
 5.	Deploy APIC Instance
 
   a. Create apic-demo-config.yaml with the following:
+     Set the correct storage file; In this case; 
+  	 For OCP_TYPE=ODF; we are setting OCP_FILE_STORAGE=`ocs-storagecluster-ceph-rbd` as seen in the YAML below.
   
 _(This yaml can also be generated via the platform navigator UI) 
-(Navigate to Platform UI  Click Create Instance  Pick Queue Manager  Click next  Pick QuickStart configuration  Click Next  Toggle Advance Setting toggle switch  Enter the details  Click YAML ) Either copy+paste the new YAML or continue deploying MQ instance via UI)
+(Navigate to Platform UI  Click Create Instance  Pick API Manager  Click next  Pick QuickStart configuration  Click Next  Toggle Advance Setting toggle switch  Enter the details  Click YAML ) Either copy+paste the new YAML or continue deploying APIM instance via UI)
 _
 
 ```yaml annotate
 cat <<EOF | oc apply -f -
-
+apiVersion: management.apiconnect.ibm.com/v1beta1
+kind: ManagementCluster
+metadata:
+  annotations:
+    apiconnect-operator/cp4i: 'false'
+  name: apim-demo
+  namespace: cp4i-apic
+spec:
+  analytics:
+    client:
+      secretName: ''
+    ingestion:
+      secretName: analytics-ingestion-client
+  apiManagerEndpoint:
+    annotations:
+      cert-manager.io/issuer: ingress-issuer
+    hosts:
+      - name: apim.apps.apiconnect.example.com
+        secretName: management-apim-endpoint-secret
+  certManagerIssuer:
+    kind: Issuer
+    name: selfsigning-issuer
+  cloudManagerEndpoint:
+    annotations:
+      cert-manager.io/issuer: ingress-issuer
+    hosts:
+      - name: cm.apps.apiconnect.example.com
+        secretName: management-cm-endpoint-secret
+  consumerAPIEndpoint:
+    annotations:
+      cert-manager.io/issuer: ingress-issuer
+    hosts:
+      - name: consumer.apps.apiconnect.example.com
+        secretName: management-consumer-endpoint-secret
+  consumerCatalogEndpoint:
+    annotations:
+      cert-manager.io/issuer: ingress-issuer
+    hosts:
+      - name: consumer-catalog.apps.apiconnect.example.com
+        secretName: management-consumer-catalog-endpoint-secret
+  databaseVolumeClaimTemplate:
+    storageClassName: ocs-storagecluster-ceph-rbd
+  gateway:
+    client:
+      secretName: gateway-client-client
+  license:
+    accept: true
+    license: L-HTFS-UAXYM3
+    use: nonproduction
+  microServiceSecurity: certManager
+  platformAPIEndpoint:
+    annotations:
+      cert-manager.io/issuer: ingress-issuer
+    hosts:
+      - name: api.apps.apiconnect.example.com
+        secretName: management-api-endpoint-secret
+  portal:
+    admin:
+      secretName: portal-admin-client
+  profile: n1xc4.m16
+  version: 10.0.8.3
 EOF
 ```
 
   c. Confirm the instance has been deployed successfully before moving to the next step running the following command:
-  
+
+  	oc get APIConnectCluster apim-demo -n cp4i-apic -o jsonpath='{.status.phase}';echo
 		
   
   d. Wait Until You get a response like this:
       `Running`
 
-6.	In the platform Navigator, you will now see an instance of APIC running. 
+6.	In the platform Navigator, you will now see an instance of API Management running. 
 
 
 
-   Click on the apic-demo instance link to navigate to APIC console.
+   Click on the apim-demo instance link to navigate to APIC console.
    
 
 
