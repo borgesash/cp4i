@@ -874,6 +874,127 @@ EOF
 
 </details>
 
+### Deploy APIC
+
+<details closed>
+
+1.	Install DataPower Catalog Source:
+
+   a. Deploy the Catalog source
+
+	oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-datapower-operator/1.11.7/OLM/catalog-sources.yaml
+ 
+   b. Confirm the catalog source has been deployed successfully before moving to the next step running the following command:
+
+	oc get catalogsources ibm-datapower-operator-catalog -n openshift-marketplace -o jsonpath='{.status.connectionState.lastObservedState}';echo
+	
+   Wait Until You get a response like this:
+      `READY`
+	  
+2.	Install DataPower Operator:
+   
+   a. Create a Subscription for the DP operator using the example file.
+
+```yaml annotate
+cat <<EOF | oc apply -f -
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: datapower-operator
+  namespace: openshift-operators      
+spec:
+  channel: v1.11-sc2
+  name: datapower-operator
+  source: ibm-datapower-operator-catalog
+  sourceNamespace: openshift-marketplace
+EOF
+```
+
+  b. Confirm the operator has been deployed successfully before moving to the next step running the following command:
+  
+		SUB_NAME=$(oc get deployment datapower-operator -n openshift-operators --ignore-not-found -o jsonpath='{.metadata.labels.olm\.owner}');if [ ! -z "$SUB_NAME" ]; then oc get csv/$SUB_NAME --ignore-not-found -o jsonpath='{.status.phase}';fi;echo 
+
+   c. Wait Until You get a response like this:
+      `Succeeded`
+
+3.	Install APIC Catalog Source:
+
+   a. Deploy the Catalog source
+
+	oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-apiconnect/5.5.0/OLM/catalog-sources.yaml
+ 
+   b. Confirm the catalog source has been deployed successfully before moving to the next step running the following command:
+
+	oc get catalogsources ibm-apiconnect-catalog -n openshift-marketplace -o jsonpath='{.status.connectionState.lastObservedState}';echo
+	
+   Wait Until You get a response like this:
+      `READY`
+	  
+3.	Install APIC Operator:
+   
+   a. Create a Subscription for the APIC operator using the example file.
+
+```yaml annotate
+cat <<EOF | oc apply -f -
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: ibm-apiconnect
+  namespace: openshift-operators
+spec:
+  channel: v5.5-sc2
+  name: ibm-apiconnect
+  source: ibm-apiconnect-catalog
+  sourceNamespace: openshift-marketplace
+EOF
+```
+
+  b. Confirm the operator has been deployed successfully before moving to the next step running the following command:
+  
+		SUB_NAME=$(oc get deployment ibm-apiconnect -n openshift-operators --ignore-not-found -o jsonpath='{.metadata.labels.olm\.owner}');if [ ! -z "$SUB_NAME" ]; then oc get csv/$SUB_NAME --ignore-not-found -o jsonpath='{.status.phase}';fi;echo    
+
+   c. Wait Until You get a response like this:
+      `Succeeded`
+
+
+4.	Create APIC namespace and add pull secret to Namespace
+   
+		oc new-project cp4i-apic
+
+		oc create secret docker-registry ibm-entitlement-key   --docker-username=cp    --docker-password=$ENT_KEY  --docker-server=cp.icr.io     --namespace=cp4i-apic
+
+5.	Deploy APIC Instance
+
+  a. Create apic-demo-config.yaml with the following:
+  
+_(This yaml can also be generated via the platform navigator UI) 
+(Navigate to Platform UI  Click Create Instance  Pick Queue Manager  Click next  Pick QuickStart configuration  Click Next  Toggle Advance Setting toggle switch  Enter the details  Click YAML ) Either copy+paste the new YAML or continue deploying MQ instance via UI)
+_
+
+```yaml annotate
+cat <<EOF | oc apply -f -
+
+EOF
+```
+
+  c. Confirm the instance has been deployed successfully before moving to the next step running the following command:
+  
+		
+  
+  d. Wait Until You get a response like this:
+      `Running`
+
+6.	In the platform Navigator, you will now see an instance of APIC running. 
+
+
+
+   Click on the apic-demo instance link to navigate to APIC console.
+   
+
+
+</details>
+
+
 ## Additional References
 
 ### Structuring CP4I Deployments in Namespaces 
