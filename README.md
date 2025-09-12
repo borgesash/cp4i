@@ -876,12 +876,16 @@ EOF
 
 ## Additional References
 
-### Structing Deployments in Namespaces 
+### Structuring CP4I Deployments in Namespaces 
 
-
+Resources:
+- https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.2?topic=ui-managing-instances-across-multiple-locations
+- https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.2?topic=planning-structuring-your-deployment
+- https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.0?topic=installing-operators
 
 
 ### Catalog Sources
+<details closed>
 Add a separate catalog source for each operator in your OpenShift cluster, to make the IBM operators available for installation. This task is also required to apply the fix packs for catalog sources, prior to an upgrade. Using a separate catalog source for each operator gives you full control of software versioning on an OpenShift cluster. It enables the following:
 •	Upgrade each Cloud Pak component independently.
 •	Have a fully declarative set of artifacts, which you can use to recreate exact installations.
@@ -890,8 +894,6 @@ Add a separate catalog source for each operator in your OpenShift cluster, to ma
 
 CATALOG SOURCE YAML
 Reference: https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.0?topic=images-adding-catalog-sources-openshift-cluster#catalog-sources-for-operators__title__1
-
-<details closed>
 
 | Name of Service      | Command reference       |
 | -------------- | -------------- |
@@ -908,14 +910,14 @@ Reference: https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.0?topic=im
 
 </details>
 
-## Subscription list 
-
+## Subscription Files 
+<details closed>
 Subscription YAML 
 
 Here are the Subscription YAML files used for building the env, which is based upon CP4I 16.1.0
 For a full list of subscriptions, see [Operators available to install.](https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.0?topic=operators-installing-by-using-cli#operators-available)
 
-<details closed>
+
 
 - IBM Cloud Pak for Integration - Platform UI, Assembly, API, API Product, Messaging server, Messaging channel, Messaging queue, Messaging user
 ``` yaml annotate
