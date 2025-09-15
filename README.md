@@ -1027,7 +1027,18 @@ EOF
   d. Note this will take almost 30 minutes, so be patient, and at the end you should get a response like this:
       `Running`
 
+  e. Portal Access Info 
+
+```
+echo "Sandbox Catalog:"
+echo "   UI URL: $(oc get managementcluster apim-demo-mgmt -n tools -o jsonpath='{.status.endpoints[?(@.name=="consumerCatalog")].uri}')cp4i-demo-org/sandbox"
+echo "Demo Catalog:"
+echo "   UI URL: $(oc get portalcluster apim-demo-ptl -n tools -o jsonpath='{.status.endpoints[?(@.name=="portalWeb")].uri}')cp4i-demo-org/demo"
+```
+
 6.	In the platform Navigator, you will now see an instance of API Management running. 
+
+<img width="1781" height="807" alt="image" src="https://github.com/user-attachments/assets/c993ceb7-b4ed-4174-91c6-0487aeccda50" />
 
 
 
