@@ -973,69 +973,49 @@ _(This yaml can also be generated via the platform navigator UI)
 (Navigate to Platform UI  Click Create Instance  Pick API Manager  Click next  Pick QuickStart configuration  Click Next  Toggle Advance Setting toggle switch  Enter the details  Click YAML ) Either copy+paste the new YAML or continue deploying APIM instance via UI)
 _
 
+
 ```yaml annotate
 cat <<EOF | oc apply -f -
-apiVersion: management.apiconnect.ibm.com/v1beta1
-kind: ManagementCluster
+apiVersion: apiconnect.ibm.com/v1beta1
+kind: APIConnectCluster
 metadata:
   annotations:
-    apiconnect-operator/cp4i: 'false'
+    apiconnect-operator/backups-not-configured: 'true'
+  labels:
+    backup.apiconnect.ibm.com/component: apiconnectcluster
   name: apim-demo
   namespace: cp4i-apic
 spec:
   analytics:
-    client:
-      secretName: ''
-    ingestion:
-      secretName: analytics-ingestion-client
-  apiManagerEndpoint:
-    annotations:
-      cert-manager.io/issuer: ingress-issuer
-    hosts:
-      - name: apim.apps.apiconnect.example.com
-        secretName: management-apim-endpoint-secret
-  certManagerIssuer:
-    kind: Issuer
-    name: selfsigning-issuer
-  cloudManagerEndpoint:
-    annotations:
-      cert-manager.io/issuer: ingress-issuer
-    hosts:
-      - name: cm.apps.apiconnect.example.com
-        secretName: management-cm-endpoint-secret
-  consumerAPIEndpoint:
-    annotations:
-      cert-manager.io/issuer: ingress-issuer
-    hosts:
-      - name: consumer.apps.apiconnect.example.com
-        secretName: management-consumer-endpoint-secret
-  consumerCatalogEndpoint:
-    annotations:
-      cert-manager.io/issuer: ingress-issuer
-    hosts:
-      - name: consumer-catalog.apps.apiconnect.example.com
-        secretName: management-consumer-catalog-endpoint-secret
-  databaseVolumeClaimTemplate:
-    storageClassName: ocs-storagecluster-ceph-rbd
-  gateway:
-    client:
-      secretName: gateway-client-client
+    mtlsValidateClient: true
   license:
     accept: true
     license: L-HTFS-UAXYM3
+    metric: VIRTUAL_PROCESSOR_CORE
     use: nonproduction
-  microServiceSecurity: certManager
-  platformAPIEndpoint:
-    annotations:
-      cert-manager.io/issuer: ingress-issuer
-    hosts:
-      - name: api.apps.apiconnect.example.com
-        secretName: management-api-endpoint-secret
   portal:
-    admin:
-      secretName: portal-admin-client
-  profile: n1xc4.m16
-  version: 10.0.8.3
+    mtlsValidateClient: true
+  profile: n1xc7.m48
+  version: 10.0.8.3-2844
+  storageClassName: ocs-storagecluster-ceph-rbd
+  management:
+    billing:
+      enabled: true
+    discovery:
+      enabled: true
+      proxyCollectorEnabled: true
+    governance:
+      enabled: true
+    testAndMonitor:
+      enabled: true
+      autoTestEnabled: true
+  gateway:
+    podAutoScaling:
+      method: HPA
+      hpa:
+        minReplicas: 1
+        maxReplicas: 3
+        targetCPUUtilizationPercentage: 50
 EOF
 ```
 
@@ -1044,7 +1024,7 @@ EOF
   	oc get APIConnectCluster apim-demo -n cp4i-apic -o jsonpath='{.status.phase}';echo
 		
   
-  d. Wait Until You get a response like this:
+  d. Note this will take almost 30 minutes, so be patient, and at the end you should get a response like this:
       `Running`
 
 6.	In the platform Navigator, you will now see an instance of API Management running. 
