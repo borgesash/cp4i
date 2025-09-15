@@ -1046,11 +1046,14 @@ echo "   UI URL: $(oc get portalcluster apim-demo-ptl -n cp4i-apic -o jsonpath='
    Select the Cloud Pak User Registry above which will then show the screen below:
    <img width="1781" height="855" alt="image" src="https://github.com/user-attachments/assets/0112850a-e00b-45a2-8f56-fb04e6c49dcf" />
 
-
-   Now you can proceed with your own configuration steps ....   
-
+7. Configuring and managing your server environment (OPTIONAL)
+   
+   Now that you have the basic APIC installed, followed steps in the [documentation](https://www.ibm.com/docs/en/api-connect/10.0.8_lts?topic=environment-cloud-manager-configuration-checklist) to configure additional items like configuring email server, registering gateway service, creating provider organizations, etc.
+    
 
 </details>
+
+
 
 
 ## Additional References
