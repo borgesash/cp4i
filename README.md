@@ -1031,19 +1031,23 @@ EOF
 
 ```
 echo "Sandbox Catalog:"
-echo "   UI URL: $(oc get managementcluster apim-demo-mgmt -n tools -o jsonpath='{.status.endpoints[?(@.name=="consumerCatalog")].uri}')cp4i-demo-org/sandbox"
+echo "   UI URL: $(oc get managementcluster apim-demo-mgmt -n cp4i-apic -o jsonpath='{.status.endpoints[?(@.name=="consumerCatalog")].uri}')cp4i-demo-org/sandbox"
 echo "Demo Catalog:"
-echo "   UI URL: $(oc get portalcluster apim-demo-ptl -n tools -o jsonpath='{.status.endpoints[?(@.name=="portalWeb")].uri}')cp4i-demo-org/demo"
+echo "   UI URL: $(oc get portalcluster apim-demo-ptl -n cp4i-apic -o jsonpath='{.status.endpoints[?(@.name=="portalWeb")].uri}')cp4i-demo-org/demo"
 ```
 
 6.	In the platform Navigator, you will now see an instance of API Management running. 
 
-<img width="1781" height="807" alt="image" src="https://github.com/user-attachments/assets/c993ceb7-b4ed-4174-91c6-0487aeccda50" />
-
-
+    <img width="1781" height="855" alt="image" src="https://github.com/user-attachments/assets/844059a5-258c-4b73-8e0a-c03042222728" />
 
    Click on the apim-demo instance link to navigate to APIC console.
+   <img width="1781" height="855" alt="image" src="https://github.com/user-attachments/assets/ffe729ed-c5eb-4b1b-b45c-0d5bf15d319b" />
    
+   Select the Cloud Pak User Registry above which will then show the screen below:
+   <img width="1781" height="855" alt="image" src="https://github.com/user-attachments/assets/0112850a-e00b-45a2-8f56-fb04e6c49dcf" />
+
+
+   Now you can proceed with your own configuration steps ....   
 
 
 </details>
