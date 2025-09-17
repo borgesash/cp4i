@@ -528,11 +528,11 @@ EOF
 4.	Deploy Queue Manager Instance
 
 Note: This is sample configuration for single Instance Queue Manager using MQSC and INI files. Additional configuration steps will be needed for more advanced MQ configuration and Security. 
-	Creating a self-signed PKI using OpenSSL
-	Example: Configuring a queue manager with mutual TLS authentication
-	Testing a mutual TLS connection to a queue manager from your laptop
-	Configuring high availability for queue managers using the IBM MQ Operator
-	Configuring a Route to connect to a queue manager from outside a Red Hat OpenShift cluster
+- [Creating a self-signed PKI using OpenSSL](https://www.ibm.com/docs/en/SSFKSJ_9.4.0/container/ctr_example_create_certs_openssl.html)
+- [Example: Configuring a queue manager with mutual TLS authentication](https://www.ibm.com/docs/en/SSFKSJ_9.4.0/container/ctr_config_tls.html)
+- [Testing a mutual TLS connection to a queue manager from your laptop](https://www.ibm.com/docs/en/SSFKSJ_9.4.0/container/ctr_test_connection_remote.html)
+- [Configuring high availability for queue managers using the IBM MQ Operator](https://www.ibm.com/docs/en/SSFKSJ_9.4.0/container/ctr_configuring_ha.html)
+- [Configuring a Route to connect to a queue manager from outside a Red Hat OpenShift cluster](https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=dcqmumo-configuring-route-connect-queue-manager-from-outside-red-hat-openshift-cluster)
 
    a. Create mqsc-ini-example.yaml with the following:
 
@@ -560,8 +560,7 @@ EOF
   b. Create qmgr-demo-config.yaml with the following:
   
 _(This yaml can also be generated via the platform navigator UI) 
-(Navigate to Platform UI  Click Create Instance  Pick Queue Manager  Click next  Pick QuickStart configuration  Click Next  Toggle Advance Setting toggle switch  Enter the details  Click YAML ) Either copy+paste the new YAML or continue deploying MQ instance via UI)
-_
+(Navigate to Platform UI -> Click Create Instance -> Pick Queue Manager -> Click next -> Pick QuickStart configuration -> Click Next -> Toggle Advance Setting toggle switch -> Enter the details -> Click YAML ) Now Either copy+paste the new YAML or continue deploying MQ instance via UI)_
 
 ```yaml annotate
 cat <<EOF | oc apply -f -
