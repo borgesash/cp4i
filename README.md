@@ -1,23 +1,22 @@
 # cp4i
-This guide installs Cloud Pak for Integration on an Openshift cluster.
-
-Reference: https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.0?topic=installing
-This install guide is for CP4I v16.1.0. This is the latest SC-2 (long term support) version of Cloud Pak for Integration. For the latest CD release, see [What's new in Cloud Pak for Integration 16.1.2] (https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.2?topic=whats-new-in-cloud-pak-integration-1612)
-
-We will install the following components of CP4I: 
-- Queue Manager
-- App Connect Enterprise Integration Servers
 
 ## Overview
-IBM Cloud Pak® for Integration installation consists of a Red Hat® OpenShift® Container Platform cluster with one or more operators installed and one or more deployed instances. You can complete all the installation steps yourself or simplify the process by installing on a managed OpenShift cluster from a cloud provider.
+This guide walks thorugh the steps of installing IBM Cloud Pak for Integration (CP4I v16.1.0) on an Openshift cluster.
 
-The main installation tasks are as follows:
-1.	Add catalog sources, to make the Cloud Pak for Integration operators available to the cluster.
-2.	Install the Cloud Pak for Integration operators.
-3.	Apply your entitlement key.
-4.	Deploy the IBM Cloud Pak Platform UI and other instances.
+Reference: https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.0?topic=installing
+
+CP4I v16.1.0 is the latest SC-2 (long term support) version of Cloud Pak for Integration. 
+For the latest CD release, see [What's new in Cloud Pak for Integration 16.1.2] (https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.2?topic=whats-new-in-cloud-pak-integration-1612)
+
+In this guide we will install the following components of CP4I: 
+- Foundational Services
+- Platform UI
+- Queue Manager
+- App Connect Enterprise Integration Servers
+- API Management
+
 This guide assumes you already have an OCP cluster with the right version and capacity up and running. The demo is based upon OCP v4.16.x with 5 worker nodes 32 vCPUs X 128 GB memory each. 
-Note: IBM Cloud Pak® for Integration 16.1.0 supports Red Hat OpenShift 4.12, 4.14, 4.15, 4.16, 4.17, 4.18, and 4.19. 
+_Note: IBM Cloud Pak® for Integration 16.1.0 supports Red Hat OpenShift 4.12, 4.14, 4.15, 4.16, 4.17, 4.18, and 4.19. _
 
 ## Before you begin
 <details closed>
