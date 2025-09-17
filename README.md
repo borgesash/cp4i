@@ -1,4 +1,4 @@
-# cp4i
+# ibm-cp4i-install
 
 ## Overview
 This guide walks thorugh the steps of installing IBM Cloud Pak for Integration (CP4I v16.1.0) on an Openshift cluster.
