@@ -5,8 +5,9 @@ This guide walks thorugh the steps of installing IBM Cloud Pak for Integration (
 
 Reference: https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.0?topic=installing
 
-CP4I v16.1.0 is the latest SC-2 (long term support) version of Cloud Pak for Integration. 
-For the latest CD release, see [What's new in Cloud Pak for Integration 16.1.2] (https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.2?topic=whats-new-in-cloud-pak-integration-1612)
+CP4I v16.1.0 is the latest SC-2 (long term support) version of Cloud Pak for Integration.
+
+For the latest CD release, see [What's new in Cloud Pak for Integration 16.1.2](https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.2?topic=whats-new-in-cloud-pak-integration-1612)
 
 In this guide we will install the following components of CP4I: 
 - Foundational Services
