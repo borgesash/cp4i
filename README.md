@@ -12,9 +12,9 @@ For the latest CD release, see [What's new in Cloud Pak for Integration 16.1.2](
 In this guide we will install the following components of CP4I: 
 - Foundational Services
 - Platform UI
-- Queue Manager
-- App Connect Enterprise Integration Servers
-- API Management
+- Queue Manager - Basic 
+- App Connect Enterprise Integration Servers - Basic
+- API Management - Basic
 
 This guide assumes you already have an OCP cluster with the right version and capacity up and running. The demo is based upon OCP v4.16.x with 5 worker nodes 32 vCPUs X 128 GB memory each.
 
