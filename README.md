@@ -208,7 +208,7 @@ EOF
 
    - Deploy the Catalog Source
 
-	oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-cp-common-services/4.6.17/OLM/catalog-sources.yaml
+	oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-cp-common-services/4.6.18/OLM/catalog-sources.yaml
 
    Note: Reference for correct catalog sources for CP4I v16.1.0: [Catalog sources for operators](https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.0?topic=images-adding-catalog-sources-openshift-cluster#catalog-sources-for-operators)
 
@@ -1079,7 +1079,7 @@ Reference: https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.0?topic=im
 
 | Name of Service      | Command reference       |
 | -------------- | -------------- |
-| IBM Cloud Pak foundational services | ```oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-cp-common-services/4.6.17/OLM/catalog-sources.yaml``` |
+| IBM Cloud Pak foundational services | ```oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-cp-common-services/4.6.18/OLM/catalog-sources.yaml``` |
 | IBM Cloud Pak for Integration | ```oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-integration-platform-navigator/7.3.16/OLM/catalog-sources.yaml``` |
 | IBM Automation foundation assets | ``` oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-integration-asset-repository/1.7.13/OLM/catalog-sources-linux-amd64.yaml ``` \
 | IBM API Connect | ``` oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-apiconnect/5.5.0/OLM/catalog-sources.yaml ``` |
