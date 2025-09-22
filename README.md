@@ -265,7 +265,7 @@ Deploying the Platform UI allows you to deploy and manage instances from a centr
 1. Install Platform UI Catalog Source
    _Note: Reference for correct catalog sources for CP4I v16.1.0: Catalog sources for operators_
 
-		oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-integration-platform-navigator/7.3.16/OLM/catalog-sources.yaml
+		oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-integration-platform-navigator/7.3.17/OLM/catalog-sources.yaml
 
    Confirm the catalog source has been deployed successfully before moving to the next step running the following command:
 
@@ -483,7 +483,7 @@ c.	Check the status of the Asset Repo instance by running the following command 
 
    a. Deploy the Catalog source
 
-	oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-mq/3.2.14/OLM/catalog-sources.yaml
+	oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-mq/3.2.15/OLM/catalog-sources.yaml
  
    b. Confirm the catalog source has been deployed successfully before moving to the next step running the following command:
    
@@ -638,7 +638,7 @@ EOF
 1.	Install App Connect Catalog Source:
     a. Apply the catalog source
 	
- 		oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-appconnect/12.0.15/OLM/catalog-sources.yaml
+ 		oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-appconnect/12.0.16/OLM/catalog-sources.yaml
 
     b. Confirm the catalog source has been deployed successfully before moving to the next step running the following command:
 
@@ -1081,15 +1081,15 @@ Reference: https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.0?topic=im
 | Name of Service      | Command reference       |
 | -------------- | -------------- |
 | IBM Cloud Pak foundational services | ```oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-cp-common-services/4.6.18/OLM/catalog-sources.yaml``` |
-| IBM Cloud Pak for Integration | ```oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-integration-platform-navigator/7.3.16/OLM/catalog-sources.yaml``` |
+| IBM Cloud Pak for Integration | ```oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-integration-platform-navigator/7.3.17/OLM/catalog-sources.yaml``` |
 | IBM Automation foundation assets | ``` oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-integration-asset-repository/1.7.13/OLM/catalog-sources-linux-amd64.yaml ``` \
 | IBM API Connect | ``` oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-apiconnect/5.5.0/OLM/catalog-sources.yaml ``` |
-| IBM App Connect | ``` oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-appconnect/12.0.15/OLM/catalog-sources.yaml ``` |
-| IBM MQ | ``` oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-mq/3.2.14/OLM/catalog-sources.yaml ``` |
+| IBM App Connect | ``` oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-appconnect/12.0.16/OLM/catalog-sources.yaml ``` |
+| IBM MQ | ``` oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-mq/3.2.15/OLM/catalog-sources.yaml ``` |
 | IBM DataPower Gateway | ``` oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-datapower-operator/1.11.7/OLM/catalog-sources.yaml ``` |
-| IBM Event Streams | ``` oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-eventstreams/12.0.0/OLM/catalog-sources.yaml ``` |
+| IBM Event Streams | ``` oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-eventstreams/12.0.1/OLM/catalog-sources.yaml ``` |
 | IBM Event Endpoint Management | ``` oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-eventendpointmanagement/11.6.3/OLM/catalog-sources.yaml ``` |
-| IBM Event Processing | ``` oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-eventprocessing/1.4.2/OLM/catalog-sources.yaml ``` |
+| IBM Event Processing | ``` oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-eventprocessing/1.4.3/OLM/catalog-sources.yaml ``` |
 
 </details>
 
