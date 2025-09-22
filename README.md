@@ -354,8 +354,9 @@ Execute the following commands to retrieve the CP4I_URL, USER and Password:
 4. Login to CP4I
    
 Use the browser to login to the CP4I url and upon successfully reset of password, you should see the following screen
- 
-<img width="1917" height="636" alt="image" src="https://github.com/user-attachments/assets/d33a090f-5dac-41f8-94b1-413dfc3e712f" />
+
+<img width="1852" height="677" alt="image" src="https://github.com/user-attachments/assets/87e5e386-d392-42a6-b01f-c1dc0a14009d" />
+
 </details>
 
 ### Deploy Asset Repo (optional)
