@@ -10,11 +10,11 @@ CP4I v16.1.0 is the latest SC-2 (long term support) version of Cloud Pak for Int
 For the latest CD release, see [What's new in Cloud Pak for Integration 16.1.2](https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.2?topic=whats-new-in-cloud-pak-integration-1612)
 
 In this guide we will install the following components of CP4I: 
-- Foundational Services
-- Platform UI
-- Queue Manager - Basic 
-- App Connect Enterprise Integration Servers - Basic
-- API Management - Basic
+-  Foundational Services
+-  Platform UI
+-  Queue Manager - Basic 
+-  App Connect Enterprise Integration Servers - Basic
+-  API Management - Basic
 
 This guide assumes you already have an OCP cluster with the right version and capacity up and running. The demo is based upon OCP v4.16.x with 5 worker nodes 32 vCPUs X 128 GB memory each and 1TB ODF Storage.
 
@@ -23,12 +23,13 @@ _Note: IBM Cloud Pak® for Integration 16.1.0 supports Red Hat OpenShift 4.12, 4
 ## Before you begin
 <details closed>
 
-a. Prepare for installation by reviewing the [Planning](https://www.ibm.com/docs/en/SSGT7J_16.1.0/planning/planning.html) section. 
+a. Prepare for installation by reviewing the [Planning](https://www.ibm.com/docs/en/SSGT7J_16.1.0/planning/planning.html) section.
+   
    Begin with these topics:
-    - [Operating environment](https://www.ibm.com/docs/en/SSGT7J_16.1.0/planning/operating_environment.html)
-    - [Storage considerations](https://www.ibm.com/docs/en/SSGT7J_16.1.0/planning/storage.html)
-    - [Considerations for high availability](https://www.ibm.com/docs/en/SSGT7J_16.1.0/planning/high_availability.html)
-    - [Structuring your deployment](https://www.ibm.com/docs/en/SSGT7J_16.1.0/planning/deployment_considerations.html) (Separate namespace vs global namespace)
+   -  [Operating environment](https://www.ibm.com/docs/en/SSGT7J_16.1.0/planning/operating_environment.html)
+   -  [Storage considerations](https://www.ibm.com/docs/en/SSGT7J_16.1.0/planning/storage.html)
+   -  [Considerations for high availability](https://www.ibm.com/docs/en/SSGT7J_16.1.0/planning/high_availability.html)
+   -  [Structuring your deployment](https://www.ibm.com/docs/en/SSGT7J_16.1.0/planning/deployment_considerations.html) (Separate namespace vs global namespace)
 	
 b. Make decisions about how you will install the operators:
  
