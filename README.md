@@ -210,9 +210,11 @@ EOF
 
    - Deploy the Catalog Source
 
+_Note: Reference for correct catalog sources for CP4I v16.1.0: [Catalog sources for operators](https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.0?topic=images-adding-catalog-sources-openshift-cluster#catalog-sources-for-operators)_
+
 	oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-cp-common-services/4.6.18/OLM/catalog-sources.yaml
 
--OR- 
+-OR using the following command- 
 	
 ```yaml annotate
 cat <<EOF | oc apply -f -
@@ -232,8 +234,7 @@ spec:
 EOF
 ```
 
-   Note: Reference for correct catalog sources for CP4I v16.1.0: [Catalog sources for operators](https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.0?topic=images-adding-catalog-sources-openshift-cluster#catalog-sources-for-operators)
-
+   
   - Confirm the catalog source has been deployed successfully before moving to the next step running the following command:
 
 		oc get catalogsources opencloud-operators -n openshift-marketplace -o jsonpath='{.status.connectionState.lastObservedState}';echo
@@ -283,9 +284,12 @@ EOF
 Deploying the Platform UI allows you to deploy and manage instances from a central location.
 
 1. Install Platform UI Catalog Source
-   _Note: Reference for correct catalog sources for CP4I v16.1.0: Catalog sources for operators_
+   _Note: Reference for correct catalog sources for CP4I v16.1.0: [Catalog sources for operators](https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.0?topic=images-adding-catalog-sources-openshift-cluster#catalog-sources-for-operators)_
+
 
 		oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-integration-platform-navigator/7.3.17/OLM/catalog-sources.yaml
+
+-OR using the following command- 
 
 ```yaml annotate
 cat <<EOF | oc apply -f -
@@ -402,9 +406,12 @@ Use the browser to login to the CP4I url and upon successfully reset of password
 <details closed>
 
 1. Install Asset Repo Catalog Source
-   _Note: Reference for correct catalog sources for CP4I v16.1.0: Catalog sources for operators_
+   _Note: Reference for correct catalog sources for CP4I v16.1.0: [Catalog sources for operators](https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.0?topic=images-adding-catalog-sources-openshift-cluster#catalog-sources-for-operators)_
+
 
 		oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-integration-asset-repository/1.7.13/OLM/catalog-sources-linux-amd64.yaml
+
+-OR using the following command- 
 
 ```yaml annotate
 cat <<EOF | oc apply -f -
@@ -543,7 +550,11 @@ c.	Check the status of the Asset Repo instance by running the following command 
 
    a. Deploy the Catalog source
 
+_Note: Reference for correct catalog sources for CP4I v16.1.0: [Catalog sources for operators](https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.0?topic=images-adding-catalog-sources-openshift-cluster#catalog-sources-for-operators)_
+
 	oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-mq/3.2.15/OLM/catalog-sources.yaml
+
+-OR using the following command- 
 
 ```yaml annotate
 cat <<EOF | oc apply -f -
@@ -714,9 +725,14 @@ EOF
 <details closed>
 
 1.	Install App Connect Catalog Source:
+
+   _Note: Reference for correct catalog sources for CP4I v16.1.0: [Catalog sources for operators](https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.0?topic=images-adding-catalog-sources-openshift-cluster#catalog-sources-for-operators)_
+
     a. Apply the catalog source
 	
  		oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-appconnect/12.0.16/OLM/catalog-sources.yaml
+
+-OR using the following command- 
 
 ```yaml annotate
 cat <<EOF | oc apply -f -
@@ -850,7 +866,6 @@ EOF
 <img width="1917" height="806" alt="image" src="https://github.com/user-attachments/assets/e263fe9e-318f-4da3-8d43-3ed92b015ca1" />
 
 
-
 5.	Deploy Designer Authoring instance 
 
     a. Create ACE designer instance
@@ -974,9 +989,13 @@ EOF
 
 1.	Install DataPower Catalog Source:
 
+_Note: Reference for correct catalog sources for CP4I v16.1.0: [Catalog sources for operators](https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.0?topic=images-adding-catalog-sources-openshift-cluster#catalog-sources-for-operators)_
+
    a. Deploy the Catalog source
 
 	oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-datapower-operator/1.11.7/OLM/catalog-sources.yaml
+
+-OR using the following command- 
 
 ```yaml annotate
 cat <<EOF | oc apply -f -
@@ -1031,9 +1050,13 @@ EOF
 
 3.	Install APIC Catalog Source:
 
+_Note: Reference for correct catalog sources for CP4I v16.1.0: [Catalog sources for operators](https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.0?topic=images-adding-catalog-sources-openshift-cluster#catalog-sources-for-operators)_
+
    a. Deploy the Catalog source
 
 	oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-apiconnect/5.5.0/OLM/catalog-sources.yaml
+
+-OR using the following command- 
 
 ```yaml annotate
 cat <<EOF | oc apply -f -
