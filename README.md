@@ -248,7 +248,7 @@ EOF
 
 #### 4. Install  common-services Operator:
 
-  _Optional: Installing the operators by using the Red Hat OpenShift console_
+   _Note: Alternate approach to install Operators is using the Red Hat OpenShift console UI_
 
   - Create a Subscription for the IBM Cloud Pak foundational services operator using the example file. Save the file as common-service-subscription.yaml
 
@@ -317,6 +317,8 @@ EOF
 		`READY`
 
 2.	Install Operator:
+
+   _Note: Alternate approach to install Operators is using the Red Hat OpenShift console UI_
    
 a.	Create a Subscription for the IBM Cloud Pak foundational services operator
 
@@ -442,6 +444,7 @@ EOF
 		`READY`
 
 2.	Install Operator:
+    _Note: Alternate approach to install Operators is using the Red Hat OpenShift console UI_
    
 a.	Create a Subscription for the Asset Repo operator
   
@@ -582,7 +585,8 @@ EOF
       `READY`
 	  
 2.	Install MQ Operator (2-5 mins):
-   
+    _Note: Alternate approach to install Operators is using the Red Hat OpenShift console UI_
+  	
    a. Create a Subscription for the MQ operator using the example file. Save the file as mq-subscription.yaml
 
 ```yaml annotate
@@ -758,6 +762,8 @@ EOF
 
 2.	Install App Connect Operator: (Time Install ~2 mins)
 
+    _Note: Alternate approach to install Operators is using the Red Hat OpenShift console UI_
+  	
    a. Create app-connect-subscription.yaml
 
 ```yaml annotate
@@ -1023,7 +1029,9 @@ EOF
       `READY`
 	  
 2.	Install DataPower Operator:
-   
+
+    _Note: Alternate approach to install Operators is using the Red Hat OpenShift console UI_
+  	
    a. Create a Subscription for the DP operator using the example file.
 
 ```yaml annotate
@@ -1084,7 +1092,9 @@ EOF
       `READY`
 	  
 3.	Install APIC Operator:
-   
+
+    _Note: Alternate approach to install Operators is using the Red Hat OpenShift console UI_
+  	
    a. Create a Subscription for the APIC operator using the example file.
 
 ```yaml annotate
