@@ -212,6 +212,26 @@ EOF
 
 	oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-cp-common-services/4.6.18/OLM/catalog-sources.yaml
 
+-OR- 
+	
+```yaml annotate
+cat <<EOF | oc apply -f -
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: opencloud-operators
+  namespace: openshift-marketplace
+spec:
+  displayName: ibm-cp-common-services-4.6.18
+  publisher: IBM
+  image: icr.io/cpopen/ibm-common-service-catalog@sha256:72274ff45fe5a9779b246f54943db4aa583b3d615e01c1444363506b2778cee2
+  sourceType: grpc
+  updateStrategy:
+    registryPoll:
+      interval: 30m0s
+EOF
+```
+
    Note: Reference for correct catalog sources for CP4I v16.1.0: [Catalog sources for operators](https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.0?topic=images-adding-catalog-sources-openshift-cluster#catalog-sources-for-operators)
 
   - Confirm the catalog source has been deployed successfully before moving to the next step running the following command:
@@ -266,6 +286,24 @@ Deploying the Platform UI allows you to deploy and manage instances from a centr
    _Note: Reference for correct catalog sources for CP4I v16.1.0: Catalog sources for operators_
 
 		oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-integration-platform-navigator/7.3.17/OLM/catalog-sources.yaml
+
+```yaml annotate
+cat <<EOF | oc apply -f -
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: ibm-integration-platform-navigator-catalog
+  namespace: openshift-marketplace
+spec:
+  displayName: ibm-integration-platform-navigator-7.3.17
+  publisher: IBM
+  image: icr.io/cpopen/ibm-integration-platform-navigator-catalog@sha256:32e75bc86318a464fda8a7e77b29ba7602ec6177752e74586becbd9e1d1d82da
+  sourceType: grpc
+  updateStrategy:
+    registryPoll:
+      interval: 30m0s
+EOF
+```
 
    Confirm the catalog source has been deployed successfully before moving to the next step running the following command:
 
@@ -367,6 +405,27 @@ Use the browser to login to the CP4I url and upon successfully reset of password
    _Note: Reference for correct catalog sources for CP4I v16.1.0: Catalog sources for operators_
 
 		oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-integration-asset-repository/1.7.13/OLM/catalog-sources-linux-amd64.yaml
+
+```yaml annotate
+cat <<EOF | oc apply -f -
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: ibm-integration-asset-repository-catalog
+  namespace: openshift-marketplace
+spec:
+  displayName: ibm-integration-asset-repository-1.7.13-linux-amd64
+  publisher: IBM
+  image: icr.io/cpopen/ibm-integration-asset-repository-catalog@sha256:63aa70e778f56dcb2a0d882301501d8b801b7b5b768880b8899bce5c54d4ee41
+  sourceType: grpc
+  updateStrategy:
+    registryPoll:
+      interval: 30m0s
+  grpcPodConfig:
+    nodeSelector:
+      kubernetes.io/arch: amd64
+EOF
+```
 
    Confirm the catalog source has been deployed successfully before moving to the next step running the following command:
 
@@ -485,7 +544,25 @@ c.	Check the status of the Asset Repo instance by running the following command 
    a. Deploy the Catalog source
 
 	oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-mq/3.2.15/OLM/catalog-sources.yaml
- 
+
+```yaml annotate
+cat <<EOF | oc apply -f -
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: ibmmq-operator-catalogsource
+  namespace: openshift-marketplace
+spec:
+  displayName: ibm-mq-3.2.15
+  publisher: IBM
+  image: icr.io/cpopen/ibm-mq-operator-catalog@sha256:4dc49bbcd06058173e675745bd4b24a8ab696d9b39c152a49b9d96836f71cc3a
+  sourceType: grpc
+  updateStrategy:
+    registryPoll:
+      interval: 30m0s
+EOF
+```
+
    b. Confirm the catalog source has been deployed successfully before moving to the next step running the following command:
    
 	oc get catalogsources ibmmq-operator-catalogsource -n openshift-marketplace -o jsonpath='{.status.connectionState.lastObservedState}';echo
@@ -640,6 +717,21 @@ EOF
     a. Apply the catalog source
 	
  		oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-appconnect/12.0.16/OLM/catalog-sources.yaml
+
+```yaml annotate
+cat <<EOF | oc apply -f -
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: appconnect-operator-catalogsource
+  namespace: openshift-marketplace
+spec:
+  displayName: ibm-appconnect-12.0.16
+  publisher: IBM
+  image: icr.io/cpopen/appconnect-operator-catalog@sha256:e044613f6869557ab3f4ad8efe380bbbcf1c41b1bb7cdadc85da2d82ee00f727
+  sourceType: grpc
+EOF
+```
 
     b. Confirm the catalog source has been deployed successfully before moving to the next step running the following command:
 
@@ -885,6 +977,24 @@ EOF
    a. Deploy the Catalog source
 
 	oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-datapower-operator/1.11.7/OLM/catalog-sources.yaml
+
+```yaml annotate
+cat <<EOF | oc apply -f -
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: ibm-datapower-operator-catalog
+  namespace: openshift-marketplace
+spec:
+  displayName: ibm-datapower-operator-1.11.7
+  publisher: IBM
+  image: icr.io/cpopen/datapower-operator-catalog@sha256:c66eb07b84f0f868e6228ccf58533d0a348ee000c444bea863887ac009e2ed25
+  sourceType: grpc
+  updateStrategy:
+    registryPoll:
+      interval: 30m0s
+EOF
+```
  
    b. Confirm the catalog source has been deployed successfully before moving to the next step running the following command:
 
@@ -924,6 +1034,24 @@ EOF
    a. Deploy the Catalog source
 
 	oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-apiconnect/5.5.0/OLM/catalog-sources.yaml
+
+```yaml annotate
+cat <<EOF | oc apply -f -
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: ibm-apiconnect-catalog
+  namespace: openshift-marketplace
+spec:
+  displayName: ibm-apiconnect-5.5.0
+  publisher: IBM
+  image: icr.io/cpopen/ibm-apiconnect-catalog@sha256:8d4114231f7dc6159f13362851501ff3b3e494a9a2533c7dd540f81449260bc8
+  sourceType: grpc
+  updateStrategy:
+    registryPoll:
+      interval: 30m0s
+EOF
+```
  
    b. Confirm the catalog source has been deployed successfully before moving to the next step running the following command:
 
