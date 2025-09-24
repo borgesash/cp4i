@@ -753,7 +753,7 @@ spec:
 EOF
 ```
 
-    b. Confirm the catalog source has been deployed successfully before moving to the next step running the following command:
+b. Confirm the catalog source has been deployed successfully before moving to the next step running the following command:
 
 		oc get catalogsources appconnect-operator-catalogsource -n openshift-marketplace -o jsonpath='{.status.connectionState.lastObservedState}';echo
  
