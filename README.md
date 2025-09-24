@@ -50,7 +50,7 @@ e. Obtaining your entitlement key
 		Set your entitlement key:
 		
       ```
-      export ENT_KEY=<my-key>
+      export IBM_ENTITLEMENT_KEY=<my-key>
       ```
  
    - (Optional) Verify the validity of the key by logging in to the IBM Entitled Registry by using a container tool.
@@ -353,7 +353,7 @@ a.	Create Platform UI namespace and add pull secret to Namespace
 
 	oc new-project cp4i
 
-	oc create secret docker-registry ibm-entitlement-key   --docker-username=cp    --docker-password=$ENT_KEY  --docker-server=cp.icr.io     --namespace=cp4i
+	oc create secret docker-registry ibm-entitlement-key   --docker-username=cp    --docker-password=$IBM_ENTITLEMENT_KEY  --docker-server=cp.icr.io     --namespace=cp4i
  
    __Note: The IBM Entitled Registry contains software images for the instances in IBM Cloud Pak® for Integration. To allow the operators to automatically pull those software images, you must first obtain your entitlement key, then add your entitlement key in a pull secret. Your entitlement key must be added to the OpenShift cluster as a pull secret to deploy instances. Adding a global pull secret enables deployment of instances in all namespaces. The alternative is to add a pull secret to each namespace in which you plan to deploy instances (any namespace with operators), plus the 'openshift-operators' namespace. However, this option adds work to your installation process._
 
@@ -478,7 +478,7 @@ a.	Create Asset Repo namespace and add pull secret to Namespace
 
 	oc new-project cp4i
 
-	oc create secret docker-registry ibm-entitlement-key   --docker-username=cp    --docker-password=$ENT_KEY  --docker-server=cp.icr.io     --namespace=cp4i
+	oc create secret docker-registry ibm-entitlement-key   --docker-username=cp    --docker-password=$IBM_ENTITLEMENT_KEY  --docker-server=cp.icr.io     --namespace=cp4i
  
    __Note: Ignore the above if you have already created the namespace 'cp4i' to install the Platform UI_
 
@@ -619,7 +619,7 @@ EOF
    
 		oc new-project cp4i-mq
 
-		oc create secret docker-registry ibm-entitlement-key   --docker-username=cp    --docker-password=$ENT_KEY  --docker-server=cp.icr.io     --namespace=cp4i-mq
+		oc create secret docker-registry ibm-entitlement-key   --docker-username=cp    --docker-password=$IBM_ENTITLEMENT_KEY  --docker-server=cp.icr.io     --namespace=cp4i-mq
 
 4.	Deploy Queue Manager Instance
 
@@ -794,7 +794,7 @@ EOF
 
 		oc new-project cp4i-ace
 
-		oc create secret docker-registry ibm-entitlement-key   --docker-username=cp    --docker-password=$ENT_KEY  --docker-server=cp.icr.io     --namespace=cp4i-ace
+		oc create secret docker-registry ibm-entitlement-key   --docker-username=cp    --docker-password=$IBM_ENTITLEMENT_KEY  --docker-server=cp.icr.io     --namespace=cp4i-ace
 
 4.	Deploy Dashboard instance:
    
@@ -1124,7 +1124,7 @@ EOF
    
 		oc new-project cp4i-apic
 
-		oc create secret docker-registry ibm-entitlement-key   --docker-username=cp    --docker-password=$ENT_KEY  --docker-server=cp.icr.io     --namespace=cp4i-apic
+		oc create secret docker-registry ibm-entitlement-key   --docker-username=cp    --docker-password=$IBM_ENTITLEMENT_KEY  --docker-server=cp.icr.io     --namespace=cp4i-apic
 
 5.	Deploy APIC Instance
 
