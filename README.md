@@ -1228,6 +1228,11 @@ Resources:
 - https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.2?topic=planning-structuring-your-deployment
 - https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.0?topic=installing-operators
 
+### Identity and access management
+
+Use Keycloak for identity and access management in IBM Cloud Pak® for Integration. The IBM Cloud Pak foundational services operator automatically installs Keycloak (at the correct version) when it is needed by an instance that is part of Cloud Pak for Integration.
+https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.0?topic=administering-identity-access-management
+
 
 ### Catalog Sources
 <details closed>
