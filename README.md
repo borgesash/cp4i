@@ -250,7 +250,7 @@ EOF
 
    _Note: Alternate approach to install Operators is using the Red Hat OpenShift console UI_
 
-  - Create a Subscription for the IBM Cloud Pak foundational services operator using the example file. Save the file as common-service-subscription.yaml
+  - Create a Subscription for the IBM Cloud Pak foundational services operator. 
 
 ```yaml annotate
 cat <<EOF | oc apply -f -
@@ -587,7 +587,7 @@ EOF
 2.	Install MQ Operator (2-5 mins):
     _Note: Alternate approach to install Operators is using the Red Hat OpenShift console UI_
   	
-   a. Create a Subscription for the MQ operator using the example file. Save the file as mq-subscription.yaml
+   a. Create a Subscription for the MQ operator.
 
 ```yaml annotate
 cat <<EOF | oc apply -f -
@@ -630,7 +630,7 @@ Note: This is sample configuration for single Instance Queue Manager using MQSC 
 - [Configuring high availability for queue managers using the IBM MQ Operator](https://www.ibm.com/docs/en/SSFKSJ_9.4.0/container/ctr_configuring_ha.html)
 - [Configuring a Route to connect to a queue manager from outside a Red Hat OpenShift cluster](https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=dcqmumo-configuring-route-connect-queue-manager-from-outside-red-hat-openshift-cluster)
 
-   a. Create mqsc-ini-example.yaml with the following:
+   a. Create sample mqsc-ini-example.yaml with the following:
 
 ```yaml annotate
 cat <<EOF | oc apply -f -
@@ -764,7 +764,7 @@ EOF
 
     _Note: Alternate approach to install Operators is using the Red Hat OpenShift console UI_
   	
-   a. Create app-connect-subscription.yaml
+   a. Create App Connect Subscription
 
 ```yaml annotate
 cat <<EOF | oc apply -f -
@@ -942,7 +942,7 @@ Click on the ace-designer-ai instance to launch the ACE Designer
     a. Create Integration runtime instance
 
     _(This yaml can also be generated via the platform navigator UI)_
-    _(Navigate to Platform UI  Click Create Instance  Pick Integration Runtime  Click next  Pick QuickStart integration   Click Next  Toggle Advance Setting toggle switch  Enter the details  Click YAML ) Either copy+paste the new YAML or continue deploying instance via UI)_
+    _(Navigate to Platform UI --> Click Create Instance --> Pick Integration Runtime --> Click next --> Pick QuickStart integration  --> Click Next --> Toggle Advance Setting toggle switch --> Enter the details --> Click YAML ) Either copy+paste the new YAML or continue deploying instance via UI)_
 
 ```yaml annotate
 cat <<EOF | oc apply -f -
@@ -1095,7 +1095,7 @@ EOF
 
     _Note: Alternate approach to install Operators is using the Red Hat OpenShift console UI_
   	
-   a. Create a Subscription for the APIC operator using the example file.
+   a. Create a Subscription for the APIC operator.
 
 ```yaml annotate
 cat <<EOF | oc apply -f -
