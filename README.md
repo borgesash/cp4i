@@ -732,7 +732,7 @@ EOF
 
    _Note: Reference for correct catalog sources for CP4I v16.1.0: [Catalog sources for operators](https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.0?topic=images-adding-catalog-sources-openshift-cluster#catalog-sources-for-operators)_
 
-    a. Apply the catalog source
+a. Apply the catalog source
 	
  		oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-appconnect/12.0.16/OLM/catalog-sources.yaml
 
