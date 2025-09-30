@@ -151,7 +151,7 @@ The foundational services help you manage and administer IBM software on your cl
 #### 1. Installing Cert Manager (Required if using APIC/Event Manager/Event Processing)
 
 _Important: The API Connect cluster, Event Manager, and Event Processing instances require you to install an appropriate certificate manager.
-OPTIONAL: To install via Openshift Console UI, follow the instructions in [Installing the cert-manager Operator for Red Hat OpenShift](https://docs.openshift.com/container-platform/4.14/security/cert_manager_operator/cert-manager-operator-install.html)_
+OPTIONAL: To install via Openshift Console UI, follow the instructions in [Installing the cert-manager Operator for Red Hat OpenShift](https://docs.redhat.com/en/documentation/openshift_container_platform/4.16/html/security_and_compliance/cert-manager-operator-for-red-hat-openshift#cert-manager-operator-install)_
 
 - Create a namespace
 
@@ -166,11 +166,11 @@ cat <<EOF | oc apply -f -
 apiVersion: operators.coreos.com/v1
 kind: OperatorGroup
 metadata:
-  name: cert-manager-operator
-  namespace: cert-manager-operator 
+  name: openshift-cert-manager-operator
+  namespace: cert-manager-operator
 spec:
-  targetNamespaces:
-  - cert-manager-operator
+  targetNamespaces: []
+  spec: {}
 EOF
 ```
 		
@@ -188,13 +188,11 @@ spec:
   name: openshift-cert-manager-operator
   source: redhat-operators 
   sourceNamespace: openshift-marketplace
+  installPlanApproval: Automatic
 EOF
 ```
-	
-<!-- oc apply -f cert-manager-operatorgroup.yaml -->
-<!-- oc apply -f cert-manager-subscription.yaml -->
 
-- Confirm the subscription has been completed successfully before moving to the next step running the following command:
+- Confirm the subscription has been completed successfully before moving to the next step by running the following command:
 		
   		SUB_NAME=$(oc get deployment cert-manager-operator-controller-manager -n cert-manager-operator --ignore-not-found -o jsonpath='{.metadata.labels.olm\.owner}');if [ ! -z "$SUB_NAME" ]; then oc get csv/$SUB_NAME -n cert-manager-operator --ignore-not-found -o jsonpath='{.status.phase}';fi;echo
 	
@@ -275,11 +273,13 @@ EOF
 
 
 ### Deploy Platform Navigator
+
 <details closed>
 Deploying the Platform UI allows you to deploy and manage instances from a central location.
 
 1. Install Platform UI Catalog Source
-   _Note: Reference for correct catalog sources for CP4I v16.1.0: [Catalog sources for operators](https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.0?topic=images-adding-catalog-sources-openshift-cluster#catalog-sources-for-operators)_
+   
+_Note: Reference for correct catalog sources for CP4I v16.1.0: [Catalog sources for operators](https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.0?topic=images-adding-catalog-sources-openshift-cluster#catalog-sources-for-operators)_
 
 
 		oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-integration-platform-navigator/7.3.17/OLM/catalog-sources.yaml
@@ -340,7 +340,7 @@ b.	Confirm the operator has been deployed successfully before moving to the next
  
    Wait Until You get a response like this(after few minutes):
 	  `Succeeded`
-	_Note: You may be seeing a response of PENDING which indicates the deployment is underway butnot yet complete. Wait until the READY response is received before continuing._
+	_Note: You may be seeing a response of PENDING which indicates the deployment is underway but not yet complete. Wait until the READY response is received before continuing._
   
 3.	Deploy the Platform UI instance
    
