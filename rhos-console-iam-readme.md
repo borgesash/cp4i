@@ -1,32 +1,67 @@
-# Red Hat OpenShift IAM integration 
+# Red Hat OpenShift Console LDAP integration 
 *This document is intended to capture the steps of integrating LDAP users to manage Red Hat OpenShift.*
 
+By default, only a kubeadmin user exists on your cluster. To specify an identity provider, you must create a custom resource (CR) that describes that identity provider and add it to the cluster. 
+
+Refer to following link for detailed information: [Configuring an LDAP identity provider](https://docs.redhat.com/en/documentation/openshift_container_platform/4.16/html/authentication_and_authorization/configuring-identity-providers#configuring-ldap-identity-provider)
+
+Upon initial install of OCP, the following message is displayed when logging into Red Hat Console
+`You are logged in as a temporary administrative user. Update the cluster OAuth configuration to allow others to log in.`
+
+Either Click on the "update the cluster OAuth" link in message to navigate to Cluster OAuth screen where you can add `LDAP` as the Identity provider via the UI or follow the steps below using CLI.
+
+
 ## Configuring LDAP for Authentication
+ 
 
-```yaml
-identityProviders:
-- name: ldap_provider
-  mappingMethod: claim
-  type: LDAP
-  ldap:
-    url: "ldap://<<add-here>>?uid"
-    bindDN: "uid=<<fully-qualified-name>>"
-    bindPassword:
-      name: ldap-bind-secret #this should match the secret-name created in next step
-    insecure: true
-    attributes:
-      id: ["uid"]
-      email: ["mail"]
-      name: ["cn"]
-      preferredUsername: ["uid"]
-```
-
-Additional steps are required after adding the authentication source in the GUI or through the CLI.
+1. Create Secret object that contains the bindPassword field
 
 ```bash
-oc create secret generic ldap-bind-secret \
-  --namespace=openshift-config \
-  --from-literal=bindPassword='<<password of user used as binDN>>'
+oc create secret generic ldap-secret --from-literal=bindPassword=<secret> -n openshift-config
+```
+
+2. Create a ConfigMap object in `openshift-config` namespace containing the certificate authority by using the following command 
+
+```bash
+oc create configmap ca-config-map --from-file=ca.crt=/path/to/ca -n openshift-config
+```
+
+3. Create CR for LDAP as Identity Provider
+
+```yaml annotate
+cat <<EOF > ldap-cr.yaml
+apiVersion: config.openshift.io/v1
+kind: OAuth
+metadata:
+  name: cluster
+spec:
+  identityProviders:
+  - name: ldapidp 
+    mappingMethod: claim 
+    type: LDAP
+    ldap:
+      attributes:
+        id: 
+        - dn
+        email: 
+        - mail
+        name: 
+        - cn
+        preferredUsername: 
+        - uid
+      bindDN: "" 
+      bindPassword: 
+        name: ldap-secret
+      ca: 
+        name: ca-config-map
+      insecure: false # When false, ldaps:// URLs connect using TLS
+      url: "ldaps://ldaps.example.com/ou=users,dc=acme,dc=com?uid"  #specifies the LDAP host and search parameters to use
+EOF
+```
+
+Edit the ldap-cr.yaml file as needed and then Apply the CR using the following command
+```bash
+oc apply -f ldap-cr.yaml
 ```
 
 You can verify the OAuth Provider afterwards with the following check:
@@ -34,6 +69,23 @@ You can verify the OAuth Provider afterwards with the following check:
 ```bash
 oc get oauth cluster -o yaml
 ```
+
+
+4. Validation
+
+Log in to the cluster as a user from your identity provider, entering the password when prompted. 
+
+```
+oc login -u <username>
+```
+
+Confirm that the user logged in successfully, and display the user name. 
+
+```
+oc whoami
+```
+
+5. Configuring Roles
 
 Next we want to either grant permissions to a single user or to a group of users:
 
@@ -108,3 +160,7 @@ Or assign the group Namespace-specific Access:
 ```bash
 oc adm policy add-role-to-group edit devops-team -n devops-project
 ```
+
+For more information on RBAC refer to [link](https://docs.redhat.com/en/documentation/openshift_container_platform/4.16/html/authentication_and_authorization/using-rbac)
+
+---
