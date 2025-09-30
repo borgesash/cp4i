@@ -133,16 +133,11 @@ oc get sc
 ### Namespaces
 <details closed>
 We will be using the (Default)All Namespaces mode to install CP4I.
-Here is the namespace where each component will be deployed by the end of the installation process.
+If you follow the instructions in this guide, your deployment structure will look below:
+<img width="400" height="400" alt="image" src="https://github.com/user-attachments/assets/517bea80-93ac-41ad-80c5-1a48fa2f525b" />
 
-| namespace      | what is deployed?       |
-| -------------- | -------------- |
-| openshift-marketplace| All Catalogsources |
-| openshift-operators| All Operators |
-| ibm-common-services| Common Services (KeyCloak/EDB) |
-| cp4i| Platform UI Instance |
-| cp4i-mq| MQ instances |
-| cp4-ace| App Connect Instances |
+For additional information, please refer to section `Structuring CP4I Deployments in Namespaces`
+
 </details>
 
 ### Deploy IBM Foundational Services
