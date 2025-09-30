@@ -60,10 +60,10 @@ e. Obtaining your entitlement key
   
 f. Set the correct Storage type
 
-Storage options 
-    Keycloak uses either the default storage class in Red Hat OpenShift Container Platform, or the storage class configured in the IBM Cloud Pak® foundational services Kubernetes resource. Before installing instances, do one of the following:
-    * Set a default storage class by adding the storageclass.kubernetes.io/is-default-class:'true' annotation in Red Hat OpenShift Container Platform.
-    * Specify a storage class name for spec.storageClass in the CommonService resource.
+Storage options:
+Keycloak uses either the default storage class in Red Hat OpenShift Container Platform, or the storage class configured in the IBM Cloud Pak® foundational services Kubernetes resource. Before installing instances, do one of the following:
+- Set a default storage class by adding the `storageclass.kubernetes.io/is-default-class:'true'` annotation in Red Hat OpenShift Container Platform.
+- Specify a storage class name for `spec.storageClass` in the CommonService resource.
 
 <details closed>
 	
