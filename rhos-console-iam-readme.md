@@ -87,7 +87,7 @@ oc whoami
 
 5. Configuring Roles
 
-Next we want to either grant permissions to a single user or to a group of users:
+Next we want to either grant permissions to a single user `devops-user1`  or to a group of users within `devops-team`:
 
 ```bash
 oc adm policy add-cluster-role-to-user cluster-admin devops-user1
