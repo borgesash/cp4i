@@ -2,7 +2,7 @@
 *This document is intended to capture the steps of integrating LDAP users to manage CP4I.*
 
 
-Refer to following link for detailed information: [Configuring an LDAP identity provider]()
+Refer to following link for detailed information: [Configuring an LDAP identity provider](https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.0?topic=management-managing-users-groups)
 
 
 ## Configuring LDAP for Authentication
@@ -47,6 +47,7 @@ Goto Users—> Click on user (in this case we are using cp4i-admin)  —> Click 
 
 
 Click on Assign Role and pick “integration-xxxx” - This will allow the new user full ADMIN access to CP4I UI similar to the original integration-admin user. 
+For additional details on Roles and Permissions refer [link](https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.0?topic=management-cloud-pak-roles-permissions)
 
 <img width="1903" height="853" alt="Pasted Graphic 65" src="https://github.com/user-attachments/assets/cbae228c-520b-4957-b359-04f7e80ca7cd" />
 
