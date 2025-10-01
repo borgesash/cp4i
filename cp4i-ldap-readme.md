@@ -33,6 +33,9 @@ Click Users to see the users imported from LDAP
 
 <img width="1872" height="434" alt="Pasted Graphic 61" src="https://github.com/user-attachments/assets/5151bba1-7590-4491-a1aa-8074b8a128e0" />
 
+Use the `Mappers` TAB to fix any incorrectly mapped LDAP attributes 
+
+<img width="1910" height="594" alt="image" src="https://github.com/user-attachments/assets/e2fdad5c-1feb-416a-88f8-196b6667629b" />
 
 When Trying to login to CP4I UI Console using the LDAP userId, if you get the Access Denied 403 error, it means that there is NO ROLE assigned to new User.
 
