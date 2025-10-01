@@ -12,7 +12,41 @@ Either Click on the "update the cluster OAuth" link in message to navigate to Cl
 
 
 ## Configuring LDAP for Authentication
- 
+
+You can verify the OAuth Provider with the following check:
+
+```bash
+oc get oauth cluster -o yaml
+```
+
+If using the default kubeadmin, you should see output similar to 
+
+```yaml annotate
+apiVersion: config.openshift.io/v1
+kind: OAuth
+metadata:
+  name: cluster
+spec:
+  identityProviders:
+  - mappingMethod: claim
+    name: IBMid
+    openID:
+      claims:
+        email:
+        - email
+        groups:
+        - member_of
+        preferredUsername:
+        - email
+      clientID: d74c0bb8-60a7-482f-9520-6a9a7a3d153e
+      clientSecret:
+        name: openid-client-secret-isv
+      extraScopes: []
+      issuer: https://techzone.verify.ibm.com/oidc/endpoint/default
+    type: OpenID
+
+```
+Now, lets proceed with the steps below:
 
 1. Create Secret object that contains the bindPassword field
 
@@ -23,7 +57,7 @@ oc create secret generic ldap-secret --from-literal=bindPassword=<secret> -n ope
 2. Create a ConfigMap object in `openshift-config` namespace containing the certificate authority by using the following command 
 
 ```bash
-oc create configmap ca-config-map --from-file=ca.crt=/path/to/ca -n openshift-config
+oc create configmap ca-config-map --from-file=ca.crt=/path/to/ca-file -n openshift-config
 ```
 
 3. Create CR for LDAP as Identity Provider
@@ -42,20 +76,20 @@ spec:
     ldap:
       attributes:
         id: 
-        - dn
+        - uid
         email: 
         - mail
         name: 
         - cn
         preferredUsername: 
         - uid
-      bindDN: "" 
+      bindDN: "<<enter bind dn>>" 
       bindPassword: 
         name: ldap-secret
       ca: 
         name: ca-config-map
-      insecure: false # When false, ldaps:// URLs connect using TLS
-      url: "ldaps://ldaps.example.com/ou=users,dc=acme,dc=com?uid"  #specifies the LDAP host and search parameters to use
+      insecure: false # When false, ldaps URLs connect using TLS
+      url: "ldaps://<<host:port>>/<<dn>>?uid"  #specifies the LDAP host and search parameters to use
 EOF
 ```
 
@@ -70,6 +104,36 @@ You can verify the OAuth Provider afterwards with the following check:
 oc get oauth cluster -o yaml
 ```
 
+Sample output using `jumpcloud ldap`
+
+```yaml annotate
+apiVersion: config.openshift.io/v1
+kind: OAuth
+metadata:
+  name: cluster
+spec:
+  identityProviders:
+  - ldap:
+      attributes:
+        email:
+        - mail
+        id:
+        - uid
+        name:
+        - cn
+        preferredUsername:
+        - uid
+      bindDN: uid=ocp-admin,ou=Users,o=68dd336531b443aef155ff54,dc=jumpcloud,dc=com
+      bindPassword:
+        name: ldap-secret
+      ca:
+        name: ca-config-map
+      insecure: false
+      url: ldaps://ldap.jumpcloud.com:636/ou=Users,o=68dd336531b443aef155ff54,dc=jumpcloud,dc=com?uid
+    mappingMethod: claim
+    name: ldapidp
+    type: LDAP
+```
 
 4. Validation
 
