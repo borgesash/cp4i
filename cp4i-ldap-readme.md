@@ -7,7 +7,6 @@ Refer to following link for detailed information: [Configuring an LDAP identity 
 
 ## Configuring LDAP for Authentication
 
-CP4I-LDAP Integration 
 
 Login to Keycloak 
 
