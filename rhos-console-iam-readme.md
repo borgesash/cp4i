@@ -135,6 +135,18 @@ spec:
     type: LDAP
 ```
 
+check health of the Authention ClusterOperator
+
+```bash
+oc get clusteroperator -n openshift-config | grep authentication
+```
+
+Sample output
+```bash
+NAME                                       VERSION   AVAILABLE   PROGRESSING   DEGRADED   SINCE   MESSAGE
+authentication                             4.16.48   True        False         False      17h     
+```
+
 4. Validation
 
 Log in to the cluster as a user from your identity provider, entering the password when prompted. 
@@ -149,6 +161,16 @@ Confirm that the user logged in successfully, and display the user name.
 oc whoami
 ```
 
+If you Navigate to your OpenShift Console UI, you should see the option for LDAPIDP as shown in screen below
+
+<img width="1630" height="646" alt="image" src="https://github.com/user-attachments/assets/e15876a5-6f5b-4174-afc0-7d26adacd4bc" />
+
+Upon Logging in with new LDAP user, you will see the below screen
+
+<img width="1904" height="712" alt="image" src="https://github.com/user-attachments/assets/1ada88ef-bb98-4110-9d7a-7a70868ed282" />
+
+
+
 5. Configuring Roles
 
 Next we want to either grant permissions to a single user `devops-user1`  or to a group of users within `devops-team`:
@@ -156,6 +178,16 @@ Next we want to either grant permissions to a single user `devops-user1`  or to 
 ```bash
 oc adm policy add-cluster-role-to-user cluster-admin devops-user1
 ```
+
+For example: Following command will will cluster-admin role to the ocp-admin (LDAP) user
+
+```bash
+oc adm policy add-cluster-role-to-user cluster-admin ocp-admin
+```
+
+Sample Output:
+`clusterrole.rbac.authorization.k8s.io/cluster-admin added: "ocp-admin"`
+
 
 To add a group of users, you need to sync the LDAP Groups with RHOS.
 
