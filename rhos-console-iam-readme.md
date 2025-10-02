@@ -15,7 +15,7 @@ Either Click on the "update the cluster OAuth" link in message to navigate to Cl
 
 ## Configuring LDAP for Authentication
 
-1. Before we Begin
+Before we Begin
 - Login to OCP using CLI
 
   Login to RedHat Openshift Console and Click on kubeadmin --> Copy Login Command 
