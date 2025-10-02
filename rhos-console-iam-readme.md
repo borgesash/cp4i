@@ -7,13 +7,27 @@ Refer to following link for detailed information: [Configuring an LDAP identity 
 
 Upon initial install of OCP, the following message is displayed when logging into Red Hat Console
 `You are logged in as a temporary administrative user. Update the cluster OAuth configuration to allow others to log in.`
+<img width="1595" height="75" alt="image" src="https://github.com/user-attachments/assets/752dba8a-ebc6-46ca-b771-c2e10e26eeae" />
+
 
 Either Click on the "update the cluster OAuth" link in message to navigate to Cluster OAuth screen where you can add `LDAP` as the Identity provider via the UI or follow the steps below using CLI.
 
 
 ## Configuring LDAP for Authentication
 
-You can verify the OAuth Provider with the following check:
+1. Before we Begin
+- Login to OCP using CLI
+
+  Login to RedHat Openshift Console and Click on kubeadmin --> Copy Login Command 
+
+  <img width="1595" height="140" alt="image" src="https://github.com/user-attachments/assets/cd7ad094-eddb-447b-9f98-161ab2a4ad85" />
+
+  Click Display Token to reveal the token that will be used to login using CLI
+  Copy the line under `Log in with this token`
+
+  You can now login to OCP using the `oc login --token=  --server=` command 
+
+- Verify the Existing OAuth Provider with the following check:
 
 ```bash
 oc get oauth cluster -o yaml
