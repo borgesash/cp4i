@@ -179,7 +179,7 @@ Next we want to either grant permissions to a single user `devops-user1`  or to 
 oc adm policy add-cluster-role-to-user cluster-admin devops-user1
 ```
 
-For example: Following command will will cluster-admin role to the ocp-admin (LDAP) user
+For example: Following command will provide  `cluster-admin` role to the `ocp-admin` (LDAP) user
 
 ```bash
 oc adm policy add-cluster-role-to-user cluster-admin ocp-admin
