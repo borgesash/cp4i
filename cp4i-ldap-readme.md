@@ -8,14 +8,17 @@ Refer to following link for detailed information: [Configuring an LDAP identity 
 ## Configuring LDAP for Authentication
 
 
-Login to Keycloak 
+Login to Keycloak UI using `integration-admin` user (Login to Platform UI --> Click Access Control. See screen below)
+
+<img width="300" height="413" alt="IBM Cloud Pak for Integration" src="https://github.com/user-attachments/assets/b95e569d-11c1-47e9-a43f-28b0d2eb62c1" />
+
 
 Click User Federation and enter your LDAP details.
-Below screens are taken while configuring jumpcloud Ldap
+For purpose of this demo, I am using `jumpcloud Ldap` as my LDAP, so below screens are taken while configuring `jumpcloud Ldap` as my IdP
 
-<img width="1862" height="831" alt="Pasted Graphic 54" src="https://github.com/user-attachments/assets/abb84e97-3881-4060-a65c-e40b757f2115" />
+<img width="1829" height="714" alt="image" src="https://github.com/user-attachments/assets/e7ecae0e-27e9-4ee8-a320-92edb163cec4" />
 ￼
-<img width="1862" height="831" alt="Pasted Graphic 55" src="https://github.com/user-attachments/assets/fc86c47e-5862-487e-830c-9be1e464cd23" />
+<img width="1829" height="714" alt="Pasted Graphic 90" src="https://github.com/user-attachments/assets/0cf3b83d-2b21-417b-b585-f05890cb43d4" />
 
 <img width="1862" height="861" alt="Pasted Graphic 59" src="https://github.com/user-attachments/assets/631eb099-043b-4cdd-b8b6-468f03390009" />
 
@@ -49,7 +52,7 @@ Goto Users—> Click on user (in this case we are using cp4i-admin)  —> Click 
 <img width="1903" height="853" alt="Pasted Graphic 64" src="https://github.com/user-attachments/assets/a5f575e8-a8bc-48ea-8728-235765e78813" />
 
 
-Click on Assign Role and pick “integration-xxxx” - This will allow the new user full ADMIN access to CP4I UI similar to the original integration-admin user. 
+Click on Assign Role and pick  `integration-xxxx` - This will allow the new user full ADMIN access to CP4I UI similar to the original `integration-admin` user. 
 For additional details on Roles and Permissions refer [link](https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.0?topic=management-cloud-pak-roles-permissions)
 
 <img width="1903" height="853" alt="Pasted Graphic 65" src="https://github.com/user-attachments/assets/cbae228c-520b-4957-b359-04f7e80ca7cd" />
@@ -60,12 +63,45 @@ Click Assign
 <img width="1903" height="443" alt="Pasted Graphic 66" src="https://github.com/user-attachments/assets/fd26a7a6-eaa6-4803-b930-ed199f958f04" />
 
 
-Now navigate to CP4I url and login as the cp4i-admin user 
+Now navigate to CP4I url and login as the `cp4i-admin` user 
 
 <img width="1903" height="890" alt="Pasted Graphic 63" src="https://github.com/user-attachments/assets/cc9af771-d5cc-4eb3-b4db-491904f9a46c" />
 
 
+## Adding certificates to the Keycloak trust store
+You can add certificates to the Keycloak trust store so that Keycloak securely connects to services protected by a custom certificate authority.
+To add certificates to the Keycloak trust store, you must be a user with namespace admin permissions. 
 
+For more information, see [OpenShift roles and permissions](https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.0?topic=management-keycloak-configuration#adding-certificates-to-the-keycloak-trust-store)
+
+- Identify the namespace that contains Keycloak.
+```bash annotate
+KEYCLOAK_NAMESPACE=<namespace>
+```
+
+For installations using All namespaces on the cluster mode, this is the servicesNamespace defined in the CommonService resource (which is `ibm-common-services` by default).
+
+- Create the resource with your additional certificates.
+
+If using Keycloak version 26, create a secret named cs-keycloak-ca-certs with your additional certificates. 
+
+```oc get csv -A | grep -i keycloak```
+
+Sample Output showing v26
+<img width="1595" height="29" alt="image" src="https://github.com/user-attachments/assets/129e0cf0-2f79-4780-8588-7a161453ad9d" />
+
+
+Use one key for each certificate:
+
+```bash annotate
+oc create secret generic cs-keycloak-ca-certs --from-file=cert1.pem --from-file=cert2.pem -n ${KEYCLOAK_NAMESPACE}
+```
+
+- To apply the configuration changes, restart the cs-keycloak pods:
+
+```bash annotate
+oc rollout restart statefulset/cs-keycloak -n ${KEYCLOAK_NAMESPACE}
+```
 
 
 
