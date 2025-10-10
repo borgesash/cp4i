@@ -103,6 +103,35 @@ oc create secret generic cs-keycloak-ca-certs --from-file=cert1.pem --from-file=
 oc rollout restart statefulset/cs-keycloak -n ${KEYCLOAK_NAMESPACE}
 ```
 
+## How to Enable DEBUG for KEY CLOAK
+
+
+In RH Console, Navigate to Workloads —> StatefulSets —> find ‘cs-keycloak’ —> Click ‘Environment’ tab 
+
+￼
+<img width="1595" height="344" alt="Pasted Graphic 93" src="https://github.com/user-attachments/assets/f8db0885-b0f7-4c03-9bee-a04532c5fd9f" />
+
+
+Click “Add More” to add a new ENV variable. 
+Name: `KC_LOG_LEVEL` 
+Value: `DEBUG`
+
+<img width="1595" height="581" alt="Pasted Graphic 94" src="https://github.com/user-attachments/assets/39ae75dc-3ca3-4beb-b09c-6a9929059a57" />
+
+
+Click SAVE , which will trigger the POD restart 
+
+Click PODS TAB and confirm that Pod has restart by looking the Created Date
+
+<img width="1854" height="581" alt="Pasted Graphic 95" src="https://github.com/user-attachments/assets/5b5e1663-64d7-407f-8864-d2ea3f3c9e8b" />
+
+
+Click on the POD `cs-keycloak-0` and navigate to the Logs to confirm that you can see the DEBUG logs
+
+CLI command to view the logs ```oc logs pod/cs-keycloak-0 -n ibm-common-services```
+
+<img width="1854" height="581" alt="Pasted Graphic 96" src="https://github.com/user-attachments/assets/b72d1a71-91a3-4a22-bf5f-9406296efaa9" />
+
 
 
 ---
