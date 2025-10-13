@@ -133,5 +133,8 @@ CLI command to view the logs ```oc logs pod/cs-keycloak-0 -n ibm-common-services
 <img width="1854" height="581" alt="Pasted Graphic 96" src="https://github.com/user-attachments/assets/b72d1a71-91a3-4a22-bf5f-9406296efaa9" />
 
 
+## Additional resources
+- [Troubleshooting LDAP configuration](https://www.ibm.com/docs/en/cloud-private/3.2.x?topic=ldap-troubleshooting-configuration)
+
 
 ---
