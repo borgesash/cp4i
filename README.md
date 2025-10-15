@@ -1216,12 +1216,18 @@ echo "   UI URL: $(oc get portalcluster apim-demo-ptl -n cp4i-apic -o jsonpath='
 
 ## Additional References
 
+
 ### Structuring CP4I Deployments in Namespaces 
 
 Resources:
 - https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.2?topic=ui-managing-instances-across-multiple-locations
 - https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.2?topic=planning-structuring-your-deployment
 - https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.0?topic=installing-operators
+
+
+### Operator version mapping
+
+- [IBM App Connect Enterprise certified container versions](https://www.ibm.com/support/pages/node/6239294)
 
 ### Identity and access management
 
