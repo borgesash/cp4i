@@ -398,148 +398,6 @@ Use the browser to login to the CP4I url and upon successfully reset of password
 
 </details>
 
-### Deploy Asset Repo (optional)
-
-<details closed>
-
-1. Install Asset Repo Catalog Source
-   _Note: Reference for correct catalog sources for CP4I v16.1.0: [Catalog sources for operators](https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.0?topic=images-adding-catalog-sources-openshift-cluster#catalog-sources-for-operators)_
-
-
-		oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-integration-asset-repository/1.7.13/OLM/catalog-sources-linux-amd64.yaml
-
--OR using the following command- 
-
-```yaml annotate
-cat <<EOF | oc apply -f -
-apiVersion: operators.coreos.com/v1alpha1
-kind: CatalogSource
-metadata:
-  name: ibm-integration-asset-repository-catalog
-  namespace: openshift-marketplace
-spec:
-  displayName: ibm-integration-asset-repository-1.7.13-linux-amd64
-  publisher: IBM
-  image: icr.io/cpopen/ibm-integration-asset-repository-catalog@sha256:63aa70e778f56dcb2a0d882301501d8b801b7b5b768880b8899bce5c54d4ee41
-  sourceType: grpc
-  updateStrategy:
-    registryPoll:
-      interval: 30m0s
-  grpcPodConfig:
-    nodeSelector:
-      kubernetes.io/arch: amd64
-EOF
-```
-
-   Confirm the catalog source has been deployed successfully before moving to the next step running the following command:
-
-		oc get catalogsources ibm-integration-asset-repository-catalog -n openshift-marketplace -o jsonpath='{.status.connectionState.lastObservedState}';echo
-  
-   Wait Until You get a response like this:
-		`READY`
-
-2.	Install Operator:
-    _Note: Alternate approach to install Operators is using the Red Hat OpenShift console UI_
-   
-a.	Create a Subscription for the Asset Repo operator
-  
-```yaml annotate
-cat <<EOF | oc apply -f -
-apiVersion: operators.coreos.com/v1alpha1
-kind: Subscription
-metadata:
-  name: ibm-integration-asset-repository
-  namespace: openshift-operators
-spec:
-  channel: v1.7-sc2
-  name: ibm-integration-asset-repository
-  source: ibm-integration-asset-repository-catalog
-  sourceNamespace: openshift-marketplace
-EOF
-```
-
-b.	Confirm the operator has been deployed successfully before moving to the next step running the following command:
-
-	SUB_NAME=$(oc get deployment ibm-integration-asset-repository-operator -n openshift-operators --ignore-not-found -o jsonpath='{.metadata.labels.olm\.owner}');if [ ! -z "$SUB_NAME" ]; then oc get csv/$SUB_NAME --ignore-not-found -o jsonpath='{.status.phase}';fi;echo
- 
-   Wait Until You get a response like this(after few minutes):
-	  `Succeeded`
-   
-_Note: You may be seeing a response of PENDING which indicates the deployment is underway but not yet complete. Wait until the READY response is received before continuing._
-
-3.	Deploy the Asset Repo instance
-   
-a.	Create Asset Repo namespace and add pull secret to Namespace
-
-	oc new-project cp4i
-
-	oc create secret docker-registry ibm-entitlement-key   --docker-username=cp    --docker-password=$IBM_ENTITLEMENT_KEY  --docker-server=cp.icr.io     --namespace=cp4i
- 
-   __Note: Ignore the above if you have already created the namespace 'cp4i' to install the Platform UI_
-
-
-b.	Create a Asset Repo instance with the following configuration. 
-    Set the correct storage file; In this case; 
-  	For OCP_TYPE=ODF; we are setting OCP_FILE_STORAGE=`ocs-storagecluster-ceph-rbd` as seen in the YAML below.
-
-```yaml annotate
-cat <<EOF | oc apply -f -
-apiVersion: integration.ibm.com/v1beta1
-kind: AssetRepository
-metadata:
-  labels:
-    backup.integration.ibm.com/component: assetrepository
-  name: asset-repo-ai
-  namespace: cp4i
-spec:
-  designerAIFeatures:
-    enabled: true
-  license:
-    accept: true
-    license: L-JTPV-KYG8TF
-  replicas: 1
-  singleReplicaOnly: true
-  storage:
-    assetDataVolume:
-      class: ocs-storagecluster-ceph-rbd
-    couchVolume:
-      class: ocs-storagecluster-ceph-rbd
-  version: 4.0-sc2
-EOF
-```
-
-c.	Check the status of the Asset Repo instance by running the following command in the project (namespace) where it was deployed:
-
-	echo -n -e "\033[1;33m";oc get assetrepository asset-repo-ai -n cp4i -o jsonpath='{.status.phase}';echo -e "\033[0m"
-
-   Wait Until You get a response like this: (Note: This can take upto 15mins)
-       `Ready`
-
-4. Post-deployment configuration (optional):
-   
-   a. Navigate to the Asset Repo instance from Platform UI clicking on the instance name as shown below:
-
-   <img width="1854" height="670" alt="image" src="https://github.com/user-attachments/assets/57cc1ebd-8112-4f73-afd6-5a53fa1b8d70" />
-
-   b. From the main page select the Remotes tab and click Add Remote as shown below:
-   <img width="1843" height="586" alt="image" src="https://github.com/user-attachments/assets/fb8f1218-4565-4e5d-a636-5491c6b4a3f8" />
-
-   c. In the next page scroll all the way down and select Select All as shown below:
-   <img width="1679" height="838" alt="image" src="https://github.com/user-attachments/assets/473d7e65-d2eb-40fd-a87e-17bd8f24fb00" />
-
-   _Note at the moment not all the asset types are available in the repo but we are ready for future enhancements._
-   
-   d. Now scroll up again and enter the name of the remote repo, for instance `CP4I Demo Assets` and then enter the Git URL "https://github.com/gomezrjo/cp4idemo" and then click "Create Remote" as shown below:
-   <img width="1854" height="857" alt="image" src="https://github.com/user-attachments/assets/6c5da2ac-de82-4817-b344-46d10cb38ca9" />
-
-   e. Final screen after adding new repo with assets
-   <img width="1864" height="539" alt="image" src="https://github.com/user-attachments/assets/c12c495a-d61a-4359-9fda-bf96cc875d47" />
-
-   You can add your own repo following the same process.
-
-   
-</details>
-
 ### Deploy Enterprise Messaging - MQ
 
 <details closed>
@@ -1209,6 +1067,355 @@ echo "   UI URL: $(oc get portalcluster apim-demo-ptl -n cp4i-apic -o jsonpath='
    Now that you have the basic APIC installed, followed steps in the [documentation](https://www.ibm.com/docs/en/api-connect/10.0.8_lts?topic=environment-cloud-manager-configuration-checklist) to configure additional items like configuring email server, registering gateway service, creating provider organizations, etc.
     
 
+</details>
+
+### Deploy Licensing Service (optional)
+
+<details closed>
+
+1. Install License Service Catalog Source
+   _Note: Reference for correct catalog sources for CP4I v16.1.0: [Catalog sources for operators](https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.0?topic=images-adding-catalog-sources-openshift-cluster#catalog-sources-for-operators)_
+
+
+		oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-integration-asset-repository/1.7.13/OLM/catalog-sources-linux-amd64.yaml
+
+oc apply -f catalog-sources/${CP4I_VER}/02a-license-service-catalog-source.yaml
+
+
+-OR using the following command- 
+
+```yaml annotate
+cat <<EOF | oc apply -f -
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: ibm-licensing-catalog
+  namespace: openshift-marketplace
+spec:
+  displayName: IBM License Service Catalog
+  publisher: IBM
+  sourceType: grpc
+  image: icr.io/cpopen/ibm-licensing-catalog
+  updateStrategy:
+   registryPoll:
+    interval: 45m
+EOF
+```
+
+   Confirm the catalog source has been deployed successfully before moving to the next step running the following command:
+
+		echo -n -e "\033[1;33m";oc get catalogsources ibm-licensing-catalog -n openshift-marketplace -o jsonpath='{.status.connectionState.lastObservedState}';echo -e "\033[0m"
+  
+   Wait Until You get a response like this:
+		`READY`
+
+2.	Install Operator:
+    _Note: Alternate approach to install Operators is using the Red Hat OpenShift console UI_
+  	
+a. Create a namespace
+	oc create namespace ibm-licensing
+
+b. Enable Operator Group in namespace
+
+```yaml annotate
+cat <<EOF | oc apply -f -
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: licensing-og
+  namespace: ibm-licensing
+spec:
+  targetNamespaces:
+  - ibm-licensing
+EOF
+```
+
+c. Install License Service (create subscription) Operator
+
+oc apply -f subscriptions/${CP4I_VER}/00-license-service-subscription.yaml
+
+```yaml annotate
+cat <<EOF | oc apply -f -
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: ibm-licensing-operator-app
+  namespace: ibm-licensing
+spec:
+  channel: v4.2
+  installPlanApproval: Automatic
+  name: ibm-licensing-operator-app
+  source: ibm-licensing-catalog
+  sourceNamespace: openshift-marketplace
+EOF
+```
+
+d.	Confirm the operator has been deployed successfully before moving to the next step running the following command:
+
+	SUB_NAME=$(oc get deployment ibm-licensing-operator -n ibm-licensing --ignore-not-found -o jsonpath='{.metadata.labels.olm\.owner}');if [ ! -z "$SUB_NAME" ]; then echo -n -e "\033[1;33m";oc get csv/$SUB_NAME -n ibm-licensing --ignore-not-found -o jsonpath='{.status.phase}';fi;echo -e "\033[0m"
+ 
+   Wait Until You get a response like this(after few minutes):
+	  `Succeeded`
+   
+_Note: You may be seeing a response of PENDING which indicates the deployment is underway but not yet complete. Wait until the READY response is received before continuing._
+
+e. Once the operator is ready check the instance has been deployed successfully running the following command:
+
+	echo -n -e "\033[1;33m";oc get IBMLicensing instance -n ibm-licensing --ignore-not-found -o jsonpath='{.status.licensingPods[0].conditions[1].status}';echo -e "\033[0m"
+
+   Wait Until You get a response like this(after few minutes):
+	  `True`
+	
+
+3.	Install License Reporter Catalog Source
+
+   oc apply -f catalog-sources/${CP4I_VER}/02b-license-reporter-catalog-source.yaml
+   
+```yaml annotate
+cat <<EOF | oc apply -f -
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: ibm-license-service-reporter-operator-catalog
+  namespace: openshift-marketplace
+spec:
+  displayName: IBM License Service Reporter Catalog
+  publisher: IBM
+  sourceType: grpc
+  image: icr.io/cpopen/ibm-license-service-reporter-operator-catalog
+  updateStrategy:
+   registryPoll:
+    interval: 45m
+EOF
+```
+
+Confirm the catalog source has been deployed successfully before moving to the next step running the following command::
+
+	echo -n -e "\033[1;33m";oc get catalogsources ibm-license-service-reporter-operator-catalog -n openshift-marketplace -o jsonpath='{.status.connectionState.lastObservedState}';echo -e "\033[0m"
+
+   Wait Until You get a response like this:
+       `READY`
+
+4. Install License Reporter Operator
+
+oc apply -f subscriptions/${CP4I_VER}/00-license-reporter-subscription.yaml
+
+
+```yaml annotate
+cat <<EOF | oc apply -f -
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: ibm-license-service-reporter-operator
+  namespace: ibm-licensing
+spec:
+  channel: v4.2
+  installPlanApproval: Automatic
+  name: ibm-license-service-reporter-operator
+  source: ibm-license-service-reporter-operator-catalog
+  sourceNamespace: openshift-marketplace
+EOF
+```
+
+Confirm the operator has been deployed successfully before moving to the next step running the following command:
+
+	SUB_NAME=$(oc get deployment ibm-license-service-reporter-operator -n ibm-licensing --ignore-not-found -o jsonpath='{.metadata.labels.olm\.owner}');if [ ! -z "$SUB_NAME" ]; then echo -n -e "\033[1;33m";oc get csv/$SUB_NAME -n ibm-licensing --ignore-not-found -o jsonpath='{.status.phase}';fi;echo -e "\033[0m"
+
+   Wait Until You get a response like this: 
+       `Succeeded`
+
+5. Deploy a License Reporter instance
+
+     Set the correct storage file; In this case; 
+  	 For OCP_TYPE=ODF; we are setting OCP_FILE_STORAGE=`ocs-storagecluster-ceph-rbd` as seen in the YAML below.
+  
+_(This yaml can also be generated via the platform navigator UI) 
+(Navigate to Platform UI  Click Create Instance  Pick API Manager  Click next  Pick QuickStart configuration  Click Next  Toggle Advance Setting toggle switch  Enter the details  Click YAML ) Either copy+paste the new YAML or continue deploying APIM instance via UI)
+
+
+```yaml annotate
+cat <<EOF | oc apply -f -
+apiVersion: operator.ibm.com/v1alpha1
+kind: IBMLicenseServiceReporter
+metadata:
+  name: ibm-lsr-instance
+  namespace: ibm-licensing
+  labels:
+    app.kubernetes.io/created-by: ibm-license-service-reporter-operator
+    app.kubernetes.io/instance: ibmlicenseservicereporter-instance
+    app.kubernetes.io/name: ibmlicenseservicereporter
+    app.kubernetes.io/part-of: ibm-license-service-reporter-operator
+spec:
+  license:
+    accept: true
+  authentication:
+    useradmin:
+      enabled: true
+  storageClass: ocs-storagecluster-ceph-rbd
+EOF
+```
+  
+
+Confirm the operator has been deployed successfully before moving to the next step running the following command:
+
+	echo -n -e "\033[1;33m";oc get IBMLicenseServiceReporter ibm-lsr-instance -n ibm-licensing --ignore-not-found -o jsonpath='{.status.LicenseServiceReporterPods[0].conditions[1].status}';echo -e "\033[0m"
+
+   Wait Until You get a response like this: 
+       `True`
+
+	   
+
+6. Configure Data Source
+
+
+
+7. Get License Service Reporter console access info:
+
+
+   
+</details>
+
+
+### Deploy Asset Repo (optional)
+
+<details closed>
+
+1. Install Asset Repo Catalog Source
+   _Note: Reference for correct catalog sources for CP4I v16.1.0: [Catalog sources for operators](https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.0?topic=images-adding-catalog-sources-openshift-cluster#catalog-sources-for-operators)_
+
+
+		oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-integration-asset-repository/1.7.13/OLM/catalog-sources-linux-amd64.yaml
+
+-OR using the following command- 
+
+```yaml annotate
+cat <<EOF | oc apply -f -
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: ibm-integration-asset-repository-catalog
+  namespace: openshift-marketplace
+spec:
+  displayName: ibm-integration-asset-repository-1.7.13-linux-amd64
+  publisher: IBM
+  image: icr.io/cpopen/ibm-integration-asset-repository-catalog@sha256:63aa70e778f56dcb2a0d882301501d8b801b7b5b768880b8899bce5c54d4ee41
+  sourceType: grpc
+  updateStrategy:
+    registryPoll:
+      interval: 30m0s
+  grpcPodConfig:
+    nodeSelector:
+      kubernetes.io/arch: amd64
+EOF
+```
+
+   Confirm the catalog source has been deployed successfully before moving to the next step running the following command:
+
+		oc get catalogsources ibm-integration-asset-repository-catalog -n openshift-marketplace -o jsonpath='{.status.connectionState.lastObservedState}';echo
+  
+   Wait Until You get a response like this:
+		`READY`
+
+2.	Install Operator:
+    _Note: Alternate approach to install Operators is using the Red Hat OpenShift console UI_
+   
+a.	Create a Subscription for the Asset Repo operator
+  
+```yaml annotate
+cat <<EOF | oc apply -f -
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: ibm-integration-asset-repository
+  namespace: openshift-operators
+spec:
+  channel: v1.7-sc2
+  name: ibm-integration-asset-repository
+  source: ibm-integration-asset-repository-catalog
+  sourceNamespace: openshift-marketplace
+EOF
+```
+
+b.	Confirm the operator has been deployed successfully before moving to the next step running the following command:
+
+	SUB_NAME=$(oc get deployment ibm-integration-asset-repository-operator -n openshift-operators --ignore-not-found -o jsonpath='{.metadata.labels.olm\.owner}');if [ ! -z "$SUB_NAME" ]; then oc get csv/$SUB_NAME --ignore-not-found -o jsonpath='{.status.phase}';fi;echo
+ 
+   Wait Until You get a response like this(after few minutes):
+	  `Succeeded`
+   
+_Note: You may be seeing a response of PENDING which indicates the deployment is underway but not yet complete. Wait until the READY response is received before continuing._
+
+3.	Deploy the Asset Repo instance
+   
+a.	Create Asset Repo namespace and add pull secret to Namespace
+
+	oc new-project cp4i
+
+	oc create secret docker-registry ibm-entitlement-key   --docker-username=cp    --docker-password=$IBM_ENTITLEMENT_KEY  --docker-server=cp.icr.io     --namespace=cp4i
+ 
+   __Note: Ignore the above if you have already created the namespace 'cp4i' to install the Platform UI_
+
+
+b.	Create a Asset Repo instance with the following configuration. 
+    Set the correct storage file; In this case; 
+  	For OCP_TYPE=ODF; we are setting OCP_FILE_STORAGE=`ocs-storagecluster-ceph-rbd` as seen in the YAML below.
+
+```yaml annotate
+cat <<EOF | oc apply -f -
+apiVersion: integration.ibm.com/v1beta1
+kind: AssetRepository
+metadata:
+  labels:
+    backup.integration.ibm.com/component: assetrepository
+  name: asset-repo-ai
+  namespace: cp4i
+spec:
+  designerAIFeatures:
+    enabled: true
+  license:
+    accept: true
+    license: L-JTPV-KYG8TF
+  replicas: 1
+  singleReplicaOnly: true
+  storage:
+    assetDataVolume:
+      class: ocs-storagecluster-ceph-rbd
+    couchVolume:
+      class: ocs-storagecluster-ceph-rbd
+  version: 4.0-sc2
+EOF
+```
+
+c.	Check the status of the Asset Repo instance by running the following command in the project (namespace) where it was deployed:
+
+	echo -n -e "\033[1;33m";oc get assetrepository asset-repo-ai -n cp4i -o jsonpath='{.status.phase}';echo -e "\033[0m"
+
+   Wait Until You get a response like this: (Note: This can take upto 15mins)
+       `Ready`
+
+4. Post-deployment configuration (optional):
+   
+   a. Navigate to the Asset Repo instance from Platform UI clicking on the instance name as shown below:
+
+   <img width="1854" height="670" alt="image" src="https://github.com/user-attachments/assets/57cc1ebd-8112-4f73-afd6-5a53fa1b8d70" />
+
+   b. From the main page select the Remotes tab and click Add Remote as shown below:
+   <img width="1843" height="586" alt="image" src="https://github.com/user-attachments/assets/fb8f1218-4565-4e5d-a636-5491c6b4a3f8" />
+
+   c. In the next page scroll all the way down and select Select All as shown below:
+   <img width="1679" height="838" alt="image" src="https://github.com/user-attachments/assets/473d7e65-d2eb-40fd-a87e-17bd8f24fb00" />
+
+   _Note at the moment not all the asset types are available in the repo but we are ready for future enhancements._
+   
+   d. Now scroll up again and enter the name of the remote repo, for instance `CP4I Demo Assets` and then enter the Git URL "https://github.com/gomezrjo/cp4idemo" and then click "Create Remote" as shown below:
+   <img width="1854" height="857" alt="image" src="https://github.com/user-attachments/assets/6c5da2ac-de82-4817-b344-46d10cb38ca9" />
+
+   e. Final screen after adding new repo with assets
+   <img width="1864" height="539" alt="image" src="https://github.com/user-attachments/assets/c12c495a-d61a-4359-9fda-bf96cc875d47" />
+
+   You can add your own repo following the same process.
+
+   
 </details>
 
 
