@@ -1070,19 +1070,28 @@ echo "   UI URL: $(oc get portalcluster apim-demo-ptl -n cp4i-apic -o jsonpath='
 </details>
 
 ### Deploy Licensing Service (optional)
-
 <details closed>
+License Service collects and measures the license usage of IBM Cloud Pak® for Integration at the OpenShift cluster level. You can retrieve this data upon request for monitoring and compliance. You can also retrieve an audit snapshot of the data that is audit evidence. License Service for Cloud Pak for Integration is not deployed automatically.
+	
+Reference [Licensing](https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.0?topic=planning-licensing)
+
+[Deploying License Service](https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.0?topic=administering-deploying-license-service)
+
+Check if License Service is already installed on the cluster to prevent the use of multiple License Service copies to report the license usage of multiple IBM Cloud Paks that are running on the same cluster. To verify the installation of License Service with CLI, run the following command:
+
+	oc get deployment --all-namespaces | grep ibm-licensing-operator
+
+
+- If you get a deployment in response, License Service is already installed on the cluster. Upgrade to the latest version to benefit from all newest features and improvements. For more information, see [Backing up and upgrading License Service](https://www.ibm.com/docs/en/SSRV9V_4.6/license-service/standalone-LS-backup-and-upgrade.html).
+
+- If you get no deployments in response, proceed with the installation of License Service.
+
+_Note: Source for below instructions [Installing License Service on OpenShift Container Platform](https://www.ibm.com/docs/en/cloud-paks/foundational-services/4.6.0?topic=service-installing-license-openshift-container-platform)_
 
 1. Install License Service Catalog Source
+   
    _Note: Reference for correct catalog sources for CP4I v16.1.0: [Catalog sources for operators](https://www.ibm.com/docs/en/cloud-paks/cp-integration/16.1.0?topic=images-adding-catalog-sources-openshift-cluster#catalog-sources-for-operators)_
 
-
-		oc apply --filename https://raw.githubusercontent.com/IBM/cloud-pak/master/repo/case/ibm-integration-asset-repository/1.7.13/OLM/catalog-sources-linux-amd64.yaml
-
-oc apply -f catalog-sources/${CP4I_VER}/02a-license-service-catalog-source.yaml
-
-
--OR using the following command- 
 
 ```yaml annotate
 cat <<EOF | oc apply -f -
@@ -1097,8 +1106,10 @@ spec:
   sourceType: grpc
   image: icr.io/cpopen/ibm-licensing-catalog
   updateStrategy:
-   registryPoll:
-    interval: 45m
+    registryPoll:
+      interval: 45m
+  grpcPodConfig:
+    securityContextConfig: restricted
 EOF
 ```
 
@@ -1110,12 +1121,14 @@ EOF
 		`READY`
 
 2.	Install Operator:
+   
     _Note: Alternate approach to install Operators is using the Red Hat OpenShift console UI_
   	
 a. Create a namespace
+
 	oc create namespace ibm-licensing
 
-b. Enable Operator Group in namespace
+b. Create the operator group to deploy the OperatorGroup resource
 
 ```yaml annotate
 cat <<EOF | oc apply -f -
@@ -1130,9 +1143,7 @@ spec:
 EOF
 ```
 
-c. Install License Service (create subscription) Operator
-
-oc apply -f subscriptions/${CP4I_VER}/00-license-service-subscription.yaml
+c. Create the subscription for License Service
 
 ```yaml annotate
 cat <<EOF | oc apply -f -
@@ -1157,7 +1168,7 @@ d.	Confirm the operator has been deployed successfully before moving to the next
    Wait Until You get a response like this(after few minutes):
 	  `Succeeded`
    
-_Note: You may be seeing a response of PENDING which indicates the deployment is underway but not yet complete. Wait until the READY response is received before continuing._
+_Note: You may be seeing a response of PENDING which indicates the deployment is underway but not yet complete. Wait until the Succeeded response is received before continuing._
 
 e. Once the operator is ready check the instance has been deployed successfully running the following command:
 
@@ -1165,11 +1176,13 @@ e. Once the operator is ready check the instance has been deployed successfully 
 
    Wait Until You get a response like this(after few minutes):
 	  `True`
-	
+
+f. Update the License Service instance that was created during installation to accept the license.
+
+	oc patch IBMLicensing instance --type=merge  -p '{"spec": {"license":{"accept":true}}}'
+
 
 3.	Install License Reporter Catalog Source
-
-   oc apply -f catalog-sources/${CP4I_VER}/02b-license-reporter-catalog-source.yaml
    
 ```yaml annotate
 cat <<EOF | oc apply -f -
@@ -1184,8 +1197,10 @@ spec:
   sourceType: grpc
   image: icr.io/cpopen/ibm-license-service-reporter-operator-catalog
   updateStrategy:
-   registryPoll:
-    interval: 45m
+    registryPoll:
+      interval: 45m
+  grpcPodConfig:
+    securityContextConfig: restricted
 EOF
 ```
 
@@ -1197,9 +1212,6 @@ Confirm the catalog source has been deployed successfully before moving to the n
        `READY`
 
 4. Install License Reporter Operator
-
-oc apply -f subscriptions/${CP4I_VER}/00-license-reporter-subscription.yaml
-
 
 ```yaml annotate
 cat <<EOF | oc apply -f -
@@ -1229,9 +1241,8 @@ Confirm the operator has been deployed successfully before moving to the next st
      Set the correct storage file; In this case; 
   	 For OCP_TYPE=ODF; we are setting OCP_FILE_STORAGE=`ocs-storagecluster-ceph-rbd` as seen in the YAML below.
   
-_(This yaml can also be generated via the platform navigator UI) 
-(Navigate to Platform UI  Click Create Instance  Pick API Manager  Click next  Pick QuickStart configuration  Click Next  Toggle Advance Setting toggle switch  Enter the details  Click YAML ) Either copy+paste the new YAML or continue deploying APIM instance via UI)
-
+_(This yaml can also be generated via the Openshift UI) 
+(Log in to your OpenShift cluster console. Go to Operators > Installed Operators. Set the project to All Projects. Find and select the IBM License Service Reporter. On the IBM License Service Reporter tile, click Create IBMLicenseServiceReporter. Enter the details. Click YAML ) Either copy+paste the new YAML or continue deploying APIM instance via UI)_
 
 ```yaml annotate
 cat <<EOF | oc apply -f -
@@ -1254,7 +1265,6 @@ spec:
   storageClass: ocs-storagecluster-ceph-rbd
 EOF
 ```
-  
 
 Confirm the operator has been deployed successfully before moving to the next step running the following command:
 
@@ -1267,6 +1277,11 @@ Confirm the operator has been deployed successfully before moving to the next st
 
 6. Configure Data Source
 
+After you deploy License Service Reporter, configure the License Service instance to enable data feeds from your clusters to License Service Reporter.
+For additional details about this topic refer to [link](https://www.ibm.com/docs/en/cloud-paks/foundational-services/4.14.0?topic=reporter-configuring-data-sources)
+
+a. Modify the License Service instance to enable data feeds from the cluster to License Service Reporter.
+
 ```bash annotate
 REPORTER_URL=$(oc get route ibm-license-service-reporter -n ibm-licensing -o jsonpath={.spec.host})
 REPORTER_URL="https://"$REPORTER_URL
@@ -1276,6 +1291,8 @@ jq --arg REPORTER_URL $REPORTER_URL \
       .spec.sender += {"reporterURL":($REPORTER_URL)}' \
      instance.json > instance-updated.json
 oc apply -f instance-updated.json
+rm -f instance.json
+rm -f instance-updated.json
 ```
 
 7. Get License Service Reporter console access info:
@@ -1289,7 +1306,17 @@ echo "License Service Reporter Dashboard URL: https://"$LSR_HOST$LSR_PATH
 echo "License Service Reporter User: " $LSR_USER_NAME
 echo "License Service Reporter Password: " $LSR_USER_PWD
 ```
+
+8. OPTIONAL 
    
+[Learn how](https://www.ibm.com/docs/en/cloud-paks/foundational-services/4.6.0?topic=SSRV9V_4.6/license-service/monitoring.htm#validation) to check whether License Service is properly deployed to your cluster and whether it collects the complete license usage data from your cluster.
+
+9. OPTIONAL - Configuring License Service Reporter to use the OAuth/OIDC 
+
+	You can configure License Service Reporter to use the OAuth/OIDC provider with Identity Provider (IDP) as the authentication method to access the console. Learn how to enable License Service Reporter to use the authentication server and view examples of configuration for IBMLicenseServiceReporter custom resource instance.
+
+   [Example for Keycloak OIDC provider with one authorized role only](https://www.ibm.com/docs/en/cloud-paks/foundational-services/4.14.0?topic=authentication-license-service-reporter-oauthoidc-provider#example-for-keycloak-oidc-provider-with-one-authorized-role-only)
+
 </details>
 
 
