@@ -1267,11 +1267,28 @@ Confirm the operator has been deployed successfully before moving to the next st
 
 6. Configure Data Source
 
-
+```bash annotate
+REPORTER_URL=$(oc get route ibm-license-service-reporter -n ibm-licensing -o jsonpath={.spec.host})
+REPORTER_URL="https://"$REPORTER_URL
+oc get ibmlicensing instance -n ibm-licensing -o json > instance.json
+jq --arg REPORTER_URL $REPORTER_URL \
+     '.spec.sender += {"reporterSecretToken":"ibm-license-service-reporter-token"} |
+      .spec.sender += {"reporterURL":($REPORTER_URL)}' \
+     instance.json > instance-updated.json
+oc apply -f instance-updated.json
+```
 
 7. Get License Service Reporter console access info:
 
-
+```bash annotate
+LSR_HOST=$(oc get route ibm-lsr-console -n ibm-licensing -o jsonpath={.spec.host})
+LSR_PATH=$(oc get route ibm-lsr-console -n ibm-licensing -o jsonpath={.spec.path})
+LSR_USER_NAME=$(oc get secret ibm-license-service-reporter-credentials -o jsonpath={.data.username} -n ibm-licensing | base64 -D)
+LSR_USER_PWD=$(oc get secret ibm-license-service-reporter-credentials -o jsonpath={.data.password} -n ibm-licensing | base64 -D)
+echo "License Service Reporter Dashboard URL: https://"$LSR_HOST$LSR_PATH
+echo "License Service Reporter User: " $LSR_USER_NAME
+echo "License Service Reporter Password: " $LSR_USER_PWD
+```
    
 </details>
 
