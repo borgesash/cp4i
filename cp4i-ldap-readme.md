@@ -7,13 +7,22 @@ Refer to following link for detailed information: [Configuring an LDAP identity 
 
 ## Configuring LDAP for Authentication
 
+This assumes that you are going to import all users into keyCloak. If you only want to import users belonging to an LDAP group, then skip this section and follow instructions in the section [Configuring LDAP Groups]()
 
 Login to Keycloak UI using `integration-admin` user (Login to Platform UI --> Click Access Control. See screen below)
 
 <img width="300" height="413" alt="IBM Cloud Pak for Integration" src="https://github.com/user-attachments/assets/b95e569d-11c1-47e9-a43f-28b0d2eb62c1" />
 
 
-Click User Federation and enter your LDAP details.
+Click User Federation and and select ‘Add Ldap providers’. 
+
+<img width="1262" height="435" alt="Pasted Graphic 15" src="https://github.com/user-attachments/assets/77c4b4f7-7cb4-4d3d-9b6d-830eb4b14472" />
+
+Here's the initial screen showing only the default user `integration-admin `
+
+<img width="1855" height="472" alt="Pasted Graphic 1" src="https://github.com/user-attachments/assets/aa6e0390-fa3e-42b6-8c08-2634bf7d97c1" />
+
+Enter your LDAP details.
 For purpose of this demo, I am using `jumpcloud Ldap` as my LDAP, so below screens are taken while configuring `jumpcloud Ldap` as my IdP
 
 <img width="1829" height="714" alt="image" src="https://github.com/user-attachments/assets/e7ecae0e-27e9-4ee8-a320-92edb163cec4" />
@@ -25,6 +34,17 @@ For purpose of this demo, I am using `jumpcloud Ldap` as my LDAP, so below scree
 <img width="1862" height="698" alt="Pasted Graphic 57" src="https://github.com/user-attachments/assets/b2adbfc0-0703-4c48-8b7e-3b82ac3ce9d6" />
 
 <img width="1862" height="861" alt="Pasted Graphic 58" src="https://github.com/user-attachments/assets/5c9b9804-66bc-48c5-9cba-29e7fe6654fa" />
+
+Ensure that `Test connection` and `Test authentication` tests are successful before proceeding to next steps.
+In the LDAP Searching and updating section, ensure that you have correct attributes mapped. 
+
+In case any LDAP searching filters are incorrect, you will see error when you navigate to Users 
+
+<img width="1857" height="788" alt="Pasted Graphic 23" src="https://github.com/user-attachments/assets/2559f1b1-da73-4fe6-83a7-a77585bcd998" />
+
+For LDAP server used for this demo, the UUID LDAP attribute was incorrect, so after changing it to “uuid”, the issue was resolved 
+
+<img width="1857" height="788" alt="Pasted Graphic 24" src="https://github.com/user-attachments/assets/bc902236-f6eb-4b7a-abdc-95b499cdd4e8" />
 
 
 UPON clicking SAVE , the following screen is displayed
@@ -131,6 +151,87 @@ Click on the POD `cs-keycloak-0` and navigate to the Logs to confirm that you ca
 CLI command to view the logs ```oc logs pod/cs-keycloak-0 -n ibm-common-services```
 
 <img width="1854" height="581" alt="Pasted Graphic 96" src="https://github.com/user-attachments/assets/b72d1a71-91a3-4a22-bf5f-9406296efaa9" />
+
+
+## Configuring LDAP Groups
+
+The below instructions are for a scenario where you want members of group  `CP4I Admins` to get access to CP4I 
+
+<img width="655" height="187" alt="• (P4I Admins, Users, 680d33653161430ef15SFfSA," src="https://github.com/user-attachments/assets/4ef30489-05ea-49a0-ae8f-2a2d69bfee57" />
+
+Here's the initial screen showing `No Groups`
+
+<img width="1869" height="472" alt="Pasted Graphic" src="https://github.com/user-attachments/assets/b63c2112-4f43-42b4-ac4c-54c020ef0b09" />
+
+Click User Federation and and select `Add Ldap providers`. Enter your LDAP details.
+
+<img width="1262" height="435" alt="Pasted Graphic 15" src="https://github.com/user-attachments/assets/77c4b4f7-7cb4-4d3d-9b6d-830eb4b14472" />
+
+Enter your LDAP details.
+For purpose of this demo, I am using `jumpcloud Ldap` as my LDAP, so below screens are taken while configuring `jumpcloud Ldap` as my IdP
+
+Enter your LDAP configuration and click `Test Connection` to verify LDAP url is correct. Click `test authentication` to validate the credentials. 
+
+<img width="1868" height="800" alt="Pasted Graphic 2" src="https://github.com/user-attachments/assets/701bf0e5-5e8e-4acf-8b78-ebb28278df3a" />
+
+<img width="1851" height="812" alt="Pasted Graphic 16" src="https://github.com/user-attachments/assets/7f803bf0-847f-4961-9dbf-b86f566925c0" />
+
+Ensure that both tests are successful before proceeding to next steps.
+
+In the LDAP Searching and updating section, ensure that you have correct attributes mapped. 
+
+Below configuration is based upon following LDAP users 
+
+<img width="772" height="383" alt="Pasted Graphic 21" src="https://github.com/user-attachments/assets/d8d197bc-3f05-4763-bfb6-56dc61ab1c80" />
+
+<img width="1868" height="685" alt="Pasted Graphic 3" src="https://github.com/user-attachments/assets/47f3ea98-3c44-4e63-b3b9-4412d78d3514" />
+
+<img width="1857" height="788" alt="Pasted Graphic 22" src="https://github.com/user-attachments/assets/2fb139cd-b58f-4f5e-9c8b-1c57ecdd1f6a" />
+
+Sync Settings 
+
+Turn off everything since we don’t want to import any users 
+ALSO, Make sure to enter a value in the `User LDAP Filter` that DOES NOT IMPORT any users, because keycloak will import users even though 'import users' option is disabled.
+
+<img width="1851" height="589" alt="Pasted Graphic 20" src="https://github.com/user-attachments/assets/1e3e8f32-0fd4-4d88-a085-6497cd7cf721" />
+
+<img width="1851" height="692" alt="Pasted Graphic 17" src="https://github.com/user-attachments/assets/772de197-ab25-4978-b13f-5001eb79fd63" />
+
+<img width="1851" height="589" alt="Pasted Graphic 18" src="https://github.com/user-attachments/assets/30039b9e-8497-4cea-8089-7ff913f37e9f" />
+
+
+Click SAVE
+
+<img width="1851" height="589" alt="Pasted Graphic 19" src="https://github.com/user-attachments/assets/7de99859-4eaf-48f5-b0d4-1e51004c5a17" />
+
+
+### CREATE A MAPPER
+
+The below LDAP group  `CP4I Admins` was used to configure the group-mapper 
+
+<img width="655" height="187" alt="• (P4I Admins, Users, 680d33653161430ef15SFfSA," src="https://github.com/user-attachments/assets/4ef30489-05ea-49a0-ae8f-2a2d69bfee57" />
+
+<img width="1868" height="797" alt="Pasted Graphic 7" src="https://github.com/user-attachments/assets/af33eb96-45a0-41ba-9e7f-bc2e04fe52a4" />
+
+Update user-attribute mapper - _This is to ensure that correct LDAP attribute(uid or dn or cn) is mapped to the userId used to login to CP4I_
+
+<img width="965" height="680" alt="Pasted Graphic 9" src="https://github.com/user-attachments/assets/ae7a9875-e664-44aa-87cf-0d775b70def8" />
+
+
+Navigate to the new group mapper and click Action — > Sync LDAP groups to LDAP
+
+<img width="1867" height="590" alt="Pasted Graphic 10" src="https://github.com/user-attachments/assets/53e8c352-373e-46f1-801c-9c839d6523db" />
+
+<img width="1867" height="590" alt="Pasted Graphic 11" src="https://github.com/user-attachments/assets/f3a10595-30c9-4c76-abf6-ffdcbd8b2551" />
+
+If your filters are correct you will see the message
+
+<img width="875" height="204" alt="Data successfully synced 0 imported groups, 1 updated groups, 0 removed" src="https://github.com/user-attachments/assets/c4ed7361-1a06-4738-8929-db439a8b1895" />
+
+If Filters are Incorrect, you will see following message:
+
+<img width="875" height="204" alt="Pasted Graphic 14" src="https://github.com/user-attachments/assets/ad20706e-589e-4eec-b88f-4e0f2bb18833" />
+
 
 
 ## Additional resources
