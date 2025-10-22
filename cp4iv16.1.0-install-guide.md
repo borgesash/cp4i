@@ -43,21 +43,7 @@ d. Tools required:
 
    - Install [oc CLI](https://docs.redhat.com/en/documentation/openshift_container_platform/4.16/html/cli_tools/openshift-cli-oc#cli-getting-started)
 
-e. Obtaining your entitlement key
 
-   - Go to the [Container software library](https://myibm.ibm.com/products-services/containerlibrary).
-   - For any key that is listed, click Copy.
-		Set your entitlement key:
-		
-      ```
-      export IBM_ENTITLEMENT_KEY=<my-key>
-      ```
- 
-   - (Optional) Verify the validity of the key by logging in to the IBM Entitled Registry by using a container tool.
-      ```
-      docker login cp.icr.io --username cp --password entitlement_key
-      ```
-  
 </details>
 
 ## Install Steps
@@ -72,6 +58,22 @@ For additional information, please refer to section `Structuring CP4I Deployment
 
 </details>
 
+### Entitlement Key
+<details closed>
+Obtaining your entitlement key
+
+- Go to the [Container software library](https://myibm.ibm.com/products-services/containerlibrary).
+- For any key that is listed, click Copy.
+- Set your entitlement key:
+
+	```export IBM_ENTITLEMENT_KEY=<my-key>```
+      
+- (Optional) Verify the validity of the key by logging in to the IBM Entitled Registry by using a container tool.
+
+  	```docker login cp.icr.io --username cp --password entitlement_key```
+
+</details>
+  
 ### Storage
 <details closed>
 Storage options:
