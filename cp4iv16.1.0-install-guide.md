@@ -477,12 +477,14 @@ EOF
 
    
 3.	Create MQ namespace and add pull secret to Namespace
-   
+
+_Ensure that IBM_ENTITLEMENT_KEY is set by following [instructions](#entitlement-key)_
+
 		oc new-project cp4i-mq
 
 		oc create secret docker-registry ibm-entitlement-key   --docker-username=cp    --docker-password=$IBM_ENTITLEMENT_KEY  --docker-server=cp.icr.io     --namespace=cp4i-mq
 
-4.	Deploy Queue Manager Instance
+3.	Deploy Queue Manager Instance
 
 Note: This is sample configuration for single Instance Queue Manager using MQSC and INI files. Additional configuration steps will be needed for more advanced MQ configuration and Security. 
 - [Creating a self-signed PKI using OpenSSL](https://www.ibm.com/docs/en/SSFKSJ_9.4.0/container/ctr_example_create_certs_openssl.html)
@@ -560,9 +562,6 @@ spec:
     enabled: true
 EOF
 ```
-
-<!-- oc apply -f mqsc-ini-example.yaml -n cp4i-mq --> 
-<!-- oc apply -f qmgr-demo-config.yaml -n cp4i-mq --> 
 
   c. Confirm the instance has been deployed successfully before moving to the next step running the following command:
   
@@ -652,6 +651,8 @@ EOF
 	`Succeeded`
 
 3.	Create new namespace and add entitlement key as secret
+
+_Ensure that IBM_ENTITLEMENT_KEY is set by following [instructions](#entitlement-key)_
 
 		oc new-project cp4i-ace
 
@@ -982,12 +983,14 @@ EOF
 
 
 4.	Create APIC namespace and add pull secret to Namespace
-   
+
+_Ensure that IBM_ENTITLEMENT_KEY is set by following [instructions](#entitlement-key)_
+
 		oc new-project cp4i-apic
 
 		oc create secret docker-registry ibm-entitlement-key   --docker-username=cp    --docker-password=$IBM_ENTITLEMENT_KEY  --docker-server=cp.icr.io     --namespace=cp4i-apic
 
-5.	Deploy APIC Instance
+4.	Deploy APIC Instance
 
   a. Create apic-demo-config.yaml with the following:
      Set the correct storage file; In this case; 
