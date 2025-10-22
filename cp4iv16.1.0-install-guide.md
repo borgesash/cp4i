@@ -58,16 +58,33 @@ e. Obtaining your entitlement key
       docker login cp.icr.io --username cp --password entitlement_key
       ```
   
-f. Set the correct Storage type
+</details>
 
+## Install Steps
+
+### Namespaces
+<details closed>
+We will be using the (Default)All Namespaces mode to install CP4I.
+If you follow the instructions in this guide, your deployment structure will look below:
+<img width="400" height="400" alt="image" src="https://github.com/user-attachments/assets/517bea80-93ac-41ad-80c5-1a48fa2f525b" />
+
+For additional information, please refer to section `Structuring CP4I Deployments in Namespaces`
+
+</details>
+
+### Storage
+<details closed>
 Storage options:
-Keycloak uses either the default storage class in Red Hat OpenShift Container Platform, or the storage class configured in the IBM Cloud Pak® foundational services Kubernetes resource. Before installing instances, do one of the following:
+Keycloak uses either the default storage class in Red Hat OpenShift Container Platform, or the storage class configured in the IBM Cloud Pak® foundational services Kubernetes resource. 
+
+Before installing instances, do one of the following:
+
 - Set a default storage class by adding the `storageclass.kubernetes.io/is-default-class:'true'` annotation in Red Hat OpenShift Container Platform.
+
 - Specify a storage class name for `spec.storageClass` in the CommonService resource.
 
-<details closed>
 	
-   - Identify current storage type
+a. Identify current storage type
      Run command to identify the existing Storage type:
 ```
 oc get sc
@@ -81,7 +98,7 @@ oc get sc
 
 For this demo environment, we are using ODF, so default storage will be ocs-storagecluster-ceph-rbd. 
 
-- Remove the existing default storage class
+b. Remove the existing default storage class
 
   Create sc-remove-default.yaml with following content
 
@@ -100,7 +117,7 @@ EOF
   Successful response would look like
   `storageclass.storage.k8s.io/ocs-storagecluster-cephfs patched`
 
-- Add the correct default storage class
+c. Add the correct default storage class
 
   create sc-set-default.yaml with the following content
 ```yaml annotate
@@ -118,26 +135,13 @@ EOF
   Successfull response would look like:
   `storageclass.storage.k8s.io/ocs-storagecluster-ceph-rbd patched`
 
-- Validate the default storage class
+d. Validate the default storage class
 	Run the following command to verify that the default storage class is correct set to your desired option. In this case it should be ocs-storagecluster-ceph-rbd
 ```
 oc get sc 
 ```
 
 <img width="1055" height="104" alt="image" src="https://github.com/user-attachments/assets/0c7c632f-a89d-420a-a06e-bc6413153f16" />
-</details>
-</details>
-
-## Install Steps
-
-### Namespaces
-<details closed>
-We will be using the (Default)All Namespaces mode to install CP4I.
-If you follow the instructions in this guide, your deployment structure will look below:
-<img width="400" height="400" alt="image" src="https://github.com/user-attachments/assets/517bea80-93ac-41ad-80c5-1a48fa2f525b" />
-
-For additional information, please refer to section `Structuring CP4I Deployments in Namespaces`
-
 </details>
 
 ### Deploy IBM Foundational Services
