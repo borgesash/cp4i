@@ -352,6 +352,8 @@ b.	Confirm the operator has been deployed successfully before moving to the next
    
 a.	Create Platform UI namespace and add pull secret to Namespace
 
+_Ensure that IBM_ENTITLEMENT_KEY is set by following [instructions](#entitlement-key)_
+	
 	oc new-project cp4i
 
 	oc create secret docker-registry ibm-entitlement-key   --docker-username=cp    --docker-password=$IBM_ENTITLEMENT_KEY  --docker-server=cp.icr.io     --namespace=cp4i
