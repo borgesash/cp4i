@@ -83,23 +83,27 @@ Keycloak uses either the default storage class in Red Hat OpenShift Container Pl
 Before installing instances, do one of the following:
 
 - Set a default storage class by adding the `storageclass.kubernetes.io/is-default-class:'true'` annotation in Red Hat OpenShift Container Platform.
-
 - Specify a storage class name for `spec.storageClass` in the CommonService resource.
 
-	
+Follow these steps:
+
 a. Identify current storage type
-     Run command to identify the existing Storage type:
+
+For this demo environment, we are using ODF, so default storage will be ocs-storagecluster-ceph-rbd. 
+
+Run command to identify the existing Storage type:
 ```
 oc get sc
 ```
 
-  Your will get a response like this showing 'ocs-storagecluster-cephfs (default)' (then proceed with the steps below):
+  If you get a response like this showing 'ocs-storagecluster-cephfs (default)' (then proceed to step b):
 
   <img width="1028" height="88" alt="image" src="https://github.com/user-attachments/assets/db44e44f-714f-4162-9dba-fa9ae7bedde0" />
 
+  If you get a response like this showing 'ocs-storagecluster-ceph-rbd (default)' (then you can move to section [Deploy IBM Foundational Services](##deploy-ibm-foundational-services):
   
+  <img width="1055" height="104" alt="image" src="https://github.com/user-attachments/assets/0c7c632f-a89d-420a-a06e-bc6413153f16" />
 
-For this demo environment, we are using ODF, so default storage will be ocs-storagecluster-ceph-rbd. 
 
 b. Remove the existing default storage class
 
