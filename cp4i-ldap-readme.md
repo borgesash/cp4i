@@ -9,6 +9,7 @@ Refer to following link for detailed information: [Configuring an LDAP identity 
 
 This assumes that you are going to import all users into keyCloak. If you only want to import users belonging to an LDAP group, then skip this section and follow instructions in the section [Configuring LDAP Groups]()
 
+<details closed>
 Login to Keycloak UI using `integration-admin` user (Login to Platform UI --> Click Access Control. See screen below)
 
 <img width="300" height="413" alt="IBM Cloud Pak for Integration" src="https://github.com/user-attachments/assets/b95e569d-11c1-47e9-a43f-28b0d2eb62c1" />
@@ -86,9 +87,10 @@ Click Assign
 Now navigate to CP4I url and login as the `cp4i-admin` user 
 
 <img width="1903" height="890" alt="Pasted Graphic 63" src="https://github.com/user-attachments/assets/cc9af771-d5cc-4eb3-b4db-491904f9a46c" />
-
+</details>
 
 ## Adding certificates to the Keycloak trust store
+<details closed>
 You can add certificates to the Keycloak trust store so that Keycloak securely connects to services protected by a custom certificate authority.
 To add certificates to the Keycloak trust store, you must be a user with namespace admin permissions. 
 
@@ -122,9 +124,10 @@ oc create secret generic cs-keycloak-ca-certs --from-file=cert1.pem --from-file=
 ```bash annotate
 oc rollout restart statefulset/cs-keycloak -n ${KEYCLOAK_NAMESPACE}
 ```
+</details>
 
 ## How to Enable DEBUG for KEY CLOAK
-
+<details closed>
 
 In RH Console, Navigate to Workloads —> StatefulSets —> find ‘cs-keycloak’ —> Click ‘Environment’ tab 
 
@@ -152,11 +155,13 @@ CLI command to view the logs ```oc logs pod/cs-keycloak-0 -n ibm-common-services
 
 <img width="1854" height="581" alt="Pasted Graphic 96" src="https://github.com/user-attachments/assets/b72d1a71-91a3-4a22-bf5f-9406296efaa9" />
 
+</details>
 
 ## Configuring LDAP Groups
 
 The below instructions are for a scenario where you want members of group  `CP4I Admins` to get access to CP4I 
 
+<details closed>
 <img width="655" height="187" alt="• (P4I Admins, Users, 680d33653161430ef15SFfSA," src="https://github.com/user-attachments/assets/4ef30489-05ea-49a0-ae8f-2a2d69bfee57" />
 
 Here's the initial screen showing `No Groups`
@@ -232,7 +237,7 @@ If Filters are Incorrect, you will see following message:
 
 <img width="875" height="204" alt="Pasted Graphic 14" src="https://github.com/user-attachments/assets/ad20706e-589e-4eec-b88f-4e0f2bb18833" />
 
-
+</details>
 
 ## Additional resources
 - [Troubleshooting LDAP configuration](https://www.ibm.com/docs/en/cloud-private/3.2.x?topic=ldap-troubleshooting-configuration)
