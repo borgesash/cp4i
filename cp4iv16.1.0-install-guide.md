@@ -1690,4 +1690,7 @@ spec:
 
 </details>
 
+### Additional Resources
+- [Connection authentication: User repositories](https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=authentication-connection-user-repositories)
+- [Planning security for IBM MQ in containers](https://www.ibm.com/docs/en/ibm-mq/9.4.x?topic=planning-security-mq-in-containers)
 
