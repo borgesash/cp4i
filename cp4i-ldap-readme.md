@@ -7,7 +7,7 @@ Refer to following link for detailed information: [Configuring an LDAP identity 
 
 ## Configuring LDAP for Authentication
 
-This assumes that you are going to import all users into keyCloak. If you only want to import users belonging to an LDAP group, then skip this section and follow instructions in the section [Configuring LDAP Groups]()
+This assumes that you are going to import all users into keyCloak. If you only want to import users belonging to an LDAP group, then skip this section and follow instructions in the section [Configuring LDAP Groups](#configuring-ldap-groups)
 
 <details closed>
 Login to Keycloak UI using `integration-admin` user (Login to Platform UI --> Click Access Control. See screen below)
