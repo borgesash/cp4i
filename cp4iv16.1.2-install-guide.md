@@ -33,6 +33,17 @@ c. Tools required:
 
    - Install [oc CLI](https://docs.redhat.com/en/documentation/openshift_container_platform/4.16/html/cli_tools/openshift-cli-oc#cli-getting-started)
 
+d. Login to OCP using CLI
+
+  Login to RedHat Openshift Console and Click on kubeadmin --> Copy Login Command 
+
+  <img width="1595" height="140" alt="image" src="https://github.com/user-attachments/assets/cd7ad094-eddb-447b-9f98-161ab2a4ad85" />
+
+  Click Display Token to reveal the token that will be used to login using CLI
+  Copy the line under `Log in with this token`
+
+  You can now login to OCP using the `oc login --token=  --server=` command 
+
 
 </details>
 
