@@ -365,22 +365,21 @@ _Ensure that IBM_ENTITLEMENT_KEY is set by following [instructions](#entitlement
 
 b.	Create a PlatformNavigator with the following configuration. 
 
-TBUpdated.... 
 ```yaml annotate
 cat <<EOF | oc apply -f -
 apiVersion: integration.ibm.com/v1beta1
 kind: PlatformNavigator
 metadata:
   name: cp4i-navigator
+  labels:
+    backup.integration.ibm.com/component: platformnavigator
   namespace: cp4i
 spec:
-  integrationAssistant:
-    enabled: true
   license:
     accept: true
-    license: L-JTPV-KYG8TF
-  replicas: 3
-  version: 16.1.0
+    license: L-CYPF-CRPF3H
+  replicas: 1
+  version: 16.1.2
 EOF
 ```
 
