@@ -272,8 +272,6 @@ spec:
 EOF
 ```
 
-<!-- oc apply -f common-service-subscription.yaml -n openshift-operators -->
-
    - Confirm the operator has been deployed successfully before moving to the next step running the following command:
 		
   	SUB_NAME=$(oc get deployment/ibm-common-service-operator -n openshift-operators --ignore-not-found -o jsonpath='{.metadata.labels.olm\.owner}');if [ ! -z "$SUB_NAME" ]; then oc get csv/$SUB_NAME --ignore-not-found -o jsonpath='{.status.phase}';fi;echo
@@ -404,7 +402,7 @@ Execute the following commands to retrieve the CP4I_URL, USER and Password:
    
 Use the browser to login to the CP4I url and upon successfully reset of password, you should see the following screen
 
-<img width="1852" height="677" alt="image" src="https://github.com/user-attachments/assets/87e5e386-d392-42a6-b01f-c1dc0a14009d" />
+<img width="1865" height="430" alt="image" src="https://github.com/user-attachments/assets/5ba8fdef-69bc-4c63-851b-0b9af06a71c9" />
 
 </details>
 
@@ -528,10 +526,10 @@ metadata:
   name: qmgr-demo
   namespace: cp4i-mq
 spec:
-  version: 9.4.0.12-r1 # The identifier of the license you are accepting. This must be the correct license identifier for the version of MQ you are using. See https://ibm.biz/Bdm9be for valid values.
+  version: 9.4.4.0-r2 # The identifier of the license you are accepting. This must be the correct license identifier for the version of MQ you are using. See https://ibm.biz/Bdm9be for valid values.
   license:
     accept: true
-    license: L-JTPV-KYG8TF
+    license: L-CYPF-CRPF3H #This must be the correct license identifier for the version of MQ you are using. See https://ibm.biz/Bdm9be for valid values.
     use: NonProduction
   queueManager:
     name: QMGRDEMO
@@ -575,7 +573,7 @@ EOF
 
 5.	In the platform Navigator, you will now see any instance of Queue Manager running. 
 
-   <img width="1917" height="636" alt="image" src="https://github.com/user-attachments/assets/44928bac-a75c-49f7-b5bf-7f54283ec1e1" />
+   <img width="1865" height="385" alt="image" src="https://github.com/user-attachments/assets/2dea4f2b-42c6-4c22-a6b2-b64ab83343d5" />
 
    Click on the qmgr-demo link to navigate to Queue Manager console.
    
@@ -643,8 +641,6 @@ spec:
 EOF
 ```
 
-<!-- oc apply -f app-connect-subscription.yaml -n openshift-operators -->
-
  b.	Confirm the operator has been deployed successfully before moving to the next step running the following command:
 
 	SUB_NAME=$(oc get deployment ibm-appconnect-operator -n openshift-operators --ignore-not-found -o jsonpath='{.metadata.labels.olm\.owner}');if [ ! -z "$SUB_NAME" ]; then oc get csv/$SUB_NAME --ignore-not-found -o jsonpath='{.status.phase}';fi;echo
@@ -668,7 +664,7 @@ _Ensure that IBM_ENTITLEMENT_KEY is set by following [instructions](#entitlement
   	   For OCP_TYPE=ODF; we are setting OCP_FILE_STORAGE=`ocs-storagecluster-cephfs` as seen in the YAML below.
 
        _(This yaml can also be generated via the platform navigator UI)
-       (Navigate to Platform UI  Click Create Instance  Pick Integration Dashboard  Click next  Pick QuickStart configuration  Click Next  Toggle Advance Setting toggle switch  Enter the details  Click YAML ) Either copy+paste the new YAML or continue deploying instance via UI)_
+       (Navigate to Platform UI -> Click Create Instance -> Pick Integration Dashboard -> Click next -> Pick QuickStart configuration -> Click Next -> Toggle Advance Setting toggle switch -> Enter the details -> Click YAML ) Either copy+paste the new YAML or continue deploying instance via UI)_
 
 ```yaml annotate
 cat <<EOF | oc apply -f -
@@ -680,6 +676,8 @@ metadata:
   name: ace-dashboard
   namespace: cp4i-ace
 spec:
+  api:
+    enabled: true
   authentication:
     integrationKeycloak:
       enabled: true
@@ -689,7 +687,7 @@ spec:
   displayMode: IntegrationRuntimes
   license:
     accept: true
-    license: L-XRNH-47FJAW
+    license: L-KPRV-AUG9NC
     use: CloudPakForIntegrationNonProduction
   pod:
     containers:
@@ -712,9 +710,7 @@ spec:
     size: 5Gi
     type: persistent-claim
     class: ocs-storagecluster-cephfs
-  version: '12.0'
-  api:
-    enabled: true
+  version: '13.0'
 EOF
 ```
 
@@ -727,7 +723,7 @@ EOF
   
   d. You should now see the ace-dashboard instance in the Platform Navigator UI
 
-<img width="1917" height="806" alt="image" src="https://github.com/user-attachments/assets/e3352cba-1cca-4987-a3ff-d51a8c3722c5" />
+<img width="1865" height="326" alt="image" src="https://github.com/user-attachments/assets/97321f0a-af6a-4cc5-99b0-9dd6f03e6e6e" />
 
    Click on the ace-dashboard link to navigate to ACE 
    
@@ -740,6 +736,7 @@ EOF
 
     _(This yaml can also be generated via the platform navigator UI)_
     _(Navigate to Platform UI  Click Create Instance  Pick Integration Design  Click next  Pick QuickStart with AI Enabled configuration  Click Next  Toggle Advance Setting toggle switch  Enter the details  Click YAML ) Either copy+paste the new YAML or continue deploying instance via UI)_
+
 
 ```yaml annotate
 cat <<EOF | oc apply -f -
@@ -763,7 +760,6 @@ spec:
       size: 10Gi
       type: persistent-claim
       class: ocs-storagecluster-ceph-rbd
-  designerFlowsOperationMode: local
   designerMappingAssist:
     enabled: true
     incrementalLearning:
@@ -774,10 +770,10 @@ spec:
         class: ocs-storagecluster-cephfs
   license:
     accept: true
-    license: L-XRNH-47FJAW
+    license: L-KPRV-AUG9NC
     use: CloudPakForIntegrationNonProduction
   replicas: 1
-  version: '12.0'
+  version: '13.0'
 EOF
 ```
 
@@ -790,7 +786,7 @@ EOF
  
    d. Once deployed, you should see the ace-designer instance in the platform navigator ui
 
-<img width="1917" height="806" alt="image" src="https://github.com/user-attachments/assets/5b5b9234-b43d-48a4-8529-a92199bcfdea" />
+<img width="1865" height="382" alt="image" src="https://github.com/user-attachments/assets/ecb94693-a0a5-4c8d-8e09-0928c5accea1" />
 
 Click on the ace-designer-ai instance to launch the ACE Designer
 
@@ -804,6 +800,7 @@ Click on the ace-designer-ai instance to launch the ACE Designer
     _(This yaml can also be generated via the platform navigator UI)_
     _(Navigate to Platform UI --> Click Create Instance --> Pick Integration Runtime --> Click next --> Pick QuickStart integration  --> Click Next --> Toggle Advance Setting toggle switch --> Enter the details --> Click YAML ) Either copy+paste the new YAML or continue deploying instance via UI)_
 
+
 ```yaml annotate
 cat <<EOF | oc apply -f -
 apiVersion: appconnect.ibm.com/v1beta1
@@ -816,7 +813,7 @@ metadata:
 spec:
   license:
     accept: true
-    license: L-XRNH-47FJAW
+    license: L-KPRV-AUG9NC
     use: CloudPakForIntegrationNonProductionFREE
   replicas: 1
   template:
@@ -827,7 +824,7 @@ spec:
             requests:
               cpu: 300m
               memory: 368Mi
-  version: '12.0'
+  version: '13.0'
 EOF
 ```
 
@@ -840,11 +837,11 @@ EOF
  
    d. Once deployed, you should see the ace-runtime instance in the platform navigator ui
 
-   <img width="1783" height="747" alt="image" src="https://github.com/user-attachments/assets/a68a6b09-9169-45a2-bbbb-0a59250d2acd" />
+   <img width="1865" height="430" alt="image" src="https://github.com/user-attachments/assets/e82406e8-13e4-47a0-8781-68c74fbbc9ad" />
 
    e. Click on the ace-runtime instance to launch the Integration runtime UI
 
-   <img width="1783" height="747" alt="image" src="https://github.com/user-attachments/assets/c9aee348-019c-4e78-8c78-f5a52821802d" />
+   <img width="1865" height="599" alt="image" src="https://github.com/user-attachments/assets/efd80f1d-f765-44bf-b8fe-e7c35ca163e6" />
 
 
 </details>
