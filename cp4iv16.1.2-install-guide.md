@@ -1400,7 +1400,7 @@ _Note: You may be seeing a response of PENDING which indicates the deployment is
    
 a.	Create Asset Repo namespace and add pull secret to Namespace
 
-   __Note: Ignore the above if you have already created the namespace 'cp4i' to install the Platform UI_
+   _Note: Ignore the below instructions if you have already created the namespace 'cp4i' to install the Platform UI_
 
 	oc new-project cp4i
 
@@ -1410,6 +1410,9 @@ a.	Create Asset Repo namespace and add pull secret to Namespace
 b.	Create a Asset Repo instance with the following configuration. 
     Set the correct storage file; In this case; 
   	For OCP_TYPE=ODF; we are setting OCP_FILE_STORAGE=`ocs-storagecluster-ceph-rbd` as seen in the YAML below.
+
+_(This yaml can also be generated via the platform navigator UI) (Navigate to Platform UI  Click Create Instance  Pick Automation Assets  Click next  Pick Single Fixed Replica configuration  Click Next  Toggle Advance Setting toggle switch  Enter the details  Click YAML ) Either copy+paste the new YAML or continue deploying Automation Assets via UI)_
+
 
 ```yaml annotate
 cat <<EOF | oc apply -f -
@@ -1425,7 +1428,7 @@ spec:
     enabled: true
   license:
     accept: true
-    license: L-JTPV-KYG8TF
+    license: L-CYPF-CRPF3H
   replicas: 1
   singleReplicaOnly: true
   storage:
@@ -1433,7 +1436,7 @@ spec:
       class: ocs-storagecluster-ceph-rbd
     couchVolume:
       class: ocs-storagecluster-ceph-rbd
-  version: 4.0-sc2
+  version: '4.2'
 EOF
 ```
 
@@ -1446,23 +1449,25 @@ c.	Check the status of the Asset Repo instance by running the following command 
 
 4. Post-deployment configuration (optional):
    
-   a. Navigate to the Asset Repo instance from Platform UI clicking on the instance name as shown below:
+   a. Navigate to the `Asset Repo` instance from Platform UI clicking on the instance name as shown below:
 
-   <img width="1854" height="670" alt="image" src="https://github.com/user-attachments/assets/57cc1ebd-8112-4f73-afd6-5a53fa1b8d70" />
+   <img width="1865" height="354" alt="image" src="https://github.com/user-attachments/assets/82789559-1da6-4d0e-b91a-4f919ac75180" />
 
-   b. From the main page select the Remotes tab and click Add Remote as shown below:
-   <img width="1843" height="586" alt="image" src="https://github.com/user-attachments/assets/fb8f1218-4565-4e5d-a636-5491c6b4a3f8" />
+   <img width="1865" height="787" alt="Automation assets" src="https://github.com/user-attachments/assets/04f957bd-7aa7-42ea-a5c8-eac4f102ab01" />
 
-   c. In the next page scroll all the way down and select Select All as shown below:
-   <img width="1679" height="838" alt="image" src="https://github.com/user-attachments/assets/473d7e65-d2eb-40fd-a87e-17bd8f24fb00" />
+   b. From the main page select the `Remotes` tab and click `Add Remote` as shown below:
+   <img width="1865" height="476" alt="Automation assets" src="https://github.com/user-attachments/assets/20d2e616-db83-4008-bceb-3ec33d1e5c51" />
+
+   c. In the next page scroll all the way down and select `Select All` as shown below:
+   <img width="1865" height="814" alt="Pasted Graphic 52" src="https://github.com/user-attachments/assets/8bffa2c5-5cda-41a1-b5e9-65119a19791b" />
 
    _Note at the moment not all the asset types are available in the repo but we are ready for future enhancements._
    
    d. Now scroll up again and enter the name of the remote repo, for instance `CP4I Demo Assets` and then enter the Git URL "https://github.com/gomezrjo/cp4idemo" and then click "Create Remote" as shown below:
-   <img width="1854" height="857" alt="image" src="https://github.com/user-attachments/assets/6c5da2ac-de82-4817-b344-46d10cb38ca9" />
+   <img width="1865" height="814" alt="Create remote" src="https://github.com/user-attachments/assets/60c70b41-b6c2-460b-8b60-64bb5046e5b9" />
 
    e. Final screen after adding new repo with assets
-   <img width="1864" height="539" alt="image" src="https://github.com/user-attachments/assets/c12c495a-d61a-4359-9fda-bf96cc875d47" />
+   <img width="1865" height="507" alt="Automation assets" src="https://github.com/user-attachments/assets/4ada605d-4558-49db-80ec-9f06cbc6855a" />
 
    You can add your own repo following the same process.
 
