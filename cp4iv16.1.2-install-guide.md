@@ -993,7 +993,7 @@ _Ensure that IBM_ENTITLEMENT_KEY is set by following [instructions](#entitlement
   	 For OCP_TYPE=ODF; we are setting OCP_FILE_STORAGE=`ocs-storagecluster-ceph-rbd` as seen in the YAML below.
   
 _(This yaml can also be generated via the platform navigator UI) 
-(Navigate to Platform UI  Click Create Instance  Pick API Manager  Click next  Pick QuickStart configuration  Click Next  Toggle Advance Setting toggle switch  Enter the details  Click YAML ) Either copy+paste the new YAML or continue deploying APIM instance via UI)
+(Navigate to Platform UI  Click Create Instance  Pick API Connect Cluster  Click next  Pick Small Replica configuration  Click Next  Toggle Advance Setting toggle switch  Enter the details  Click YAML ) Either copy+paste the new YAML or continue deploying APIC instance via UI)
 _
 
 
@@ -1013,15 +1013,19 @@ spec:
     mtlsValidateClient: true
   license:
     accept: true
-    license: L-HTFS-UAXYM3
+    license: L-RAWZ-DSFFFV
     metric: VIRTUAL_PROCESSOR_CORE
     use: nonproduction
   portal:
     mtlsValidateClient: true
   profile: n1xc7.m48
-  version: 10.0.8.3-2844
+  version: 10.0.10.0
   storageClassName: ocs-storagecluster-ceph-rbd
   management:
+    ai:
+      enabled: true
+      apiAgent:
+        enabled: false
     billing:
       enabled: true
     discovery:
