@@ -1022,10 +1022,6 @@ spec:
   version: 10.0.10.0
   storageClassName: ocs-storagecluster-ceph-rbd
   management:
-    ai:
-      enabled: true
-      apiAgent:
-        enabled: false
     billing:
       enabled: true
     discovery:
@@ -1065,7 +1061,7 @@ echo "   UI URL: $(oc get portalcluster apim-demo-ptl -n cp4i-apic -o jsonpath='
 
 6.	In the platform Navigator, you will now see an instance of API Management running. 
 
-    <img width="1781" height="855" alt="image" src="https://github.com/user-attachments/assets/844059a5-258c-4b73-8e0a-c03042222728" />
+    <img width="1865" height="521" alt="image" src="https://github.com/user-attachments/assets/1ff8216b-ce99-4566-a072-a545d6cbf282" />
 
    Click on the apim-demo instance link to navigate to APIC console.
    <img width="1781" height="855" alt="image" src="https://github.com/user-attachments/assets/ffe729ed-c5eb-4b1b-b45c-0d5bf15d319b" />
