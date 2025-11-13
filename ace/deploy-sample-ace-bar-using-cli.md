@@ -1,5 +1,7 @@
 This tutorial introduces some IBM® App Connect in containers concepts and describes how you can deploy a broker archive (BAR) file, which was developed by using the IBM App Connect Enterprise Toolkit, to a runtime environment.
 
+# Steps
+
 1. Log in to the Red Hat OpenShift cluster
 
 `oc login --token=xxxxxxxxx  --server=https://host:port`
@@ -85,7 +87,7 @@ spec:
           name: runtime
   logFormat: basic
   barURL:
-    - 'https://github.com/borgesash/cp4i/raw/main/ace-sample-bars/HttpEchoApp.bar'
+    - 'https://github.com/amarIBM/hello-world/raw/master/HttpEchoApp.bar'
   configurations:
     - github-barauth
   version: '13.0'
@@ -153,7 +155,7 @@ You should receive a response that is similar to the following example, which co
 `<Echo><DateStamp>2025-11-13T17:27:05.220219Z</DateStamp></Echo>`
 
 
-#Next steps:
+# Whats Next:
 
 In this scenario, you deployed a simple flow from an IBM Integration Bus or IBM App Connect Enterprise environment into a container by using the Red Hat OpenShift CLI. You can now proceed to Scenario 2 to learn how to deploy the same BAR file by using the App Connect Dashboard.
 
