@@ -157,6 +157,6 @@ You should receive a response that is similar to the following example, which co
 
 In this scenario, you deployed a simple flow from an IBM Integration Bus or IBM App Connect Enterprise environment into a container by using the Red Hat OpenShift CLI. You can now proceed to Scenario 2 to learn how to deploy the same BAR file by using the App Connect Dashboard.
 
-https://www.ibm.com/docs/en/app-connect/12.0.x?topic=dtiir-scenario-2-deploying-toolkit-integration-from-app-connect-dashboard-3
+https://www.ibm.com/docs/en/app-connect/13.0.x?topic=dtiir-scenario-2-deploying-toolkit-integration-from-app-connect-dashboard-1
 
 
