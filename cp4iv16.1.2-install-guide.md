@@ -107,37 +107,18 @@ oc get sc
 
 b. Remove the existing default storage class
 
-  Create sc-remove-default.yaml with following content
-
-```yaml annotate
-cat <<EOF > sc-remove-default.yaml
-metadata:
-  annotations:
-    storageclass.kubernetes.io/is-default-class: "false"
-EOF
-```
-
   Execute the follwing command
   ```
-  oc get sc | grep default | awk '{system("oc patch storageclass " $1 " --patch-file sc-remove-default.yaml")}'
+  oc patch storageclass ocs-storagecluster-cephfs --type=merge  -p '{"metadata":{"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
   ```
   Successful response would look like
   `storageclass.storage.k8s.io/ocs-storagecluster-cephfs patched`
 
 c. Add the correct default storage class
 
-  create sc-set-default.yaml with the following content
-```yaml annotate
-cat <<EOF > sc-set-default.yaml
-metadata:
-  annotations:
-    storageclass.kubernetes.io/is-default-class: "true"
-EOF
-```
-
   Execute the following command
   ```
-  oc patch storageclass ocs-storagecluster-ceph-rbd --patch-file sc-set-default.yaml
+  oc patch storageclass ocs-storagecluster-ceph-rbd --type=merge  -p '{"metadata":{"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
   ```
   Successfull response would look like:
   `storageclass.storage.k8s.io/ocs-storagecluster-ceph-rbd patched`
