@@ -1,6 +1,8 @@
+# ACE BAR file deploying using CLI
+
 This tutorial introduces some IBM® App Connect in containers concepts and describes how you can deploy a broker archive (BAR) file, which was developed by using the IBM App Connect Enterprise Toolkit, to a runtime environment.
 
-# Steps
+## Steps
 
 1. Log in to the Red Hat OpenShift cluster
 
@@ -155,10 +157,12 @@ You should receive a response that is similar to the following example, which co
 `<Echo><DateStamp>2025-11-13T17:27:05.220219Z</DateStamp></Echo>`
 
 
-# Whats Next:
+## Whats Next:
 
-In this scenario, you deployed a simple flow from an IBM Integration Bus or IBM App Connect Enterprise environment into a container by using the Red Hat OpenShift CLI. You can now proceed to Scenario 2 to learn how to deploy the same BAR file by using the App Connect Dashboard.
+In this scenario, you deployed a simple flow from an IBM Integration Bus or IBM App Connect Enterprise environment into a container by using the Red Hat OpenShift CLI. You can now proceed to Scenario 2 to learn how to deploy the same BAR file by using the [App Connect Dashboard](https://github.com/borgesash/cp4i/blob/main/ace/deploy-sample-ace-bar-using-ui.md).
 
-https://www.ibm.com/docs/en/app-connect/13.0.x?topic=dtiir-scenario-2-deploying-toolkit-integration-from-app-connect-dashboard-1
 
+## References
+
+https://www.ibm.com/docs/en/app-connect/13.0.x?topic=dtiir-scenario-1-deploying-toolkit-integration-from-red-hat-openshift-cli-1
 
