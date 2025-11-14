@@ -98,3 +98,8 @@ The response should look like this, which indicates that you successfully invoke
 
 
 By completing this deployment from the App Connect Dashboard, you can see that the Dashboard enables you to perform the same actions on the underlying Kubernetes platform as you completed by using the command line. You can switch between the CLI and the Dashboard user interface as preferred, and should observe that the results of any actions in one interface are reflected in the other.
+
+## References
+https://www.ibm.com/docs/en/app-connect/13.0.x?topic=dtiir-scenario-2-deploying-toolkit-integration-from-app-connect-dashboard-1
+
+
