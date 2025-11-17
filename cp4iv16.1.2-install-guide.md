@@ -825,6 +825,12 @@ EOF
    <img width="1865" height="599" alt="image" src="https://github.com/user-attachments/assets/efd80f1d-f765-44bf-b8fe-e7c35ca163e6" />
 
 
+
+7. Learn how to deploy hello world BAR file 
+   - using the [App Connect Dashboard](https://github.com/borgesash/cp4i/blob/main/ace/deploy-sample-ace-bar-using-ui.md).
+   - using the [CLI](https://github.com/borgesash/cp4i/blob/main/ace/deploy-sample-ace-bar-using-cli.md)
+
+
 </details>
 
 ### Deploy APIC
