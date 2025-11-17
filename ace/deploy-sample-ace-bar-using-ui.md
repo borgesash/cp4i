@@ -18,9 +18,10 @@ When you log in to the Platform UI, you can directly open the App Connect Dashbo
 
 ### Accessing the Dashboard from the Red Hat OpenShift web console
 From the namespace (or project) where you created the App Connect Dashboard instance (under Operators > Installed Operators > IBM App Connect), click the Dashboard tab and then click the Dashboard name.
-On the Details tab of the ““Dashboard details”” view, the Admin UI field provides the URL for accessing the Dashboard instance. You can right-click this URL and then use the Open link in new tab option to open the Dashboard on a separate tab.
+On the Details tab of the ““Dashboard details”” view, the Dashboard UI field provides the URL for accessing the Dashboard instance. You can right-click this URL and then use the Open link in new tab option to open the Dashboard on a separate tab.
 
-<img width="966" height="535" alt="Dashboard overview" src="https://github.com/user-attachments/assets/c58a4fd7-918a-4d34-a7c1-098b944d2298" />
+<img width="1871" height="797" alt="image" src="https://github.com/user-attachments/assets/058e67d4-bbdc-4404-b333-88ca12095b5a" />
+
 
 ## Exploring the App Connect Dashboard
 The Dashboard home page displays the following tiles:
@@ -28,6 +29,8 @@ The Dashboard home page displays the following tiles:
 - A Learn more tile that you can use to view the IBM App Connect in containers documentation
 - A Runtimes tile that indicates how many integration runtimes are running, and which you can use to view the deployed runtimes
 - An Integrations tile that indicates how many integration applications are currently deployed for the integration runtimes, and which you can use to view these integrationsThe Runtimes and Integrations tiles are shown only if integration runtimes have been deployed.
+
+<img width="1871" height="474" alt="image" src="https://github.com/user-attachments/assets/773f7c33-5233-4ac1-84e2-e3a3baf02f80" />
 
 
 ### Obtaining the BAR file that you want to deploy
