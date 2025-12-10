@@ -20,5 +20,9 @@ This is a repository for guides on installing various components of Cloud Pak fo
   - learn how to deploy the BAR file by using the [App Connect Dashboard](https://github.com/borgesash/cp4i/blob/main/ace/deploy-sample-ace-bar-using-ui.md).
   - learn how to deploy the BAR file by using the [CLI](https://github.com/borgesash/cp4i/blob/main/ace/deploy-sample-ace-bar-using-cli.md)
 - [App Connect Troubleshooting](https://www.ibm.com/docs/en/app-connect/13.0.x?topic=delivery-monitoring-troubleshooting)
+- [Enabling monitoring views for deployed integration runtimes on Red Hat OpenShift](https://www.ibm.com/docs/en/SSTTDS_13.0/containers_cd/com.ibm.ace.icp.doc/certc_enablingmonitoringviews_ir.html)
+- [Enabling and managing trace for a deployed integration runtime](https://www.ibm.com/docs/en/SSTTDS_13.0/containers_cd/com.ibm.ace.icp.doc/managingtraceiruntime.html)
+
+
 
 
