@@ -105,4 +105,7 @@ By completing this deployment from the App Connect Dashboard, you can see that t
 ## References
 https://www.ibm.com/docs/en/app-connect/13.0.x?topic=dtiir-scenario-2-deploying-toolkit-integration-from-app-connect-dashboard-1
 
+- [Enabling monitoring views for deployed integration runtimes on Red Hat OpenShift](https://www.ibm.com/docs/en/SSTTDS_13.0/containers_cd/com.ibm.ace.icp.doc/certc_enablingmonitoringviews_ir.html)
+- [Enabling and managing trace for a deployed integration runtime](https://www.ibm.com/docs/en/SSTTDS_13.0/containers_cd/com.ibm.ace.icp.doc/managingtraceiruntime.html)
+
 
